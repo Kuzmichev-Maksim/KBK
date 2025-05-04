@@ -17,8 +17,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
-from rest_framework.decorators import api_view
-from rest_framework.authtoken.models import Token
 
 logger = logging.getLogger(__name__)
 
@@ -538,7 +536,7 @@ def employee_view(request):
                             end_date__isnull=True
                         ).last()
                         if history_entry:
-                            history_entry.end_date = now().date()
+                            history_entry.end_date = timezone.now().date()
                             history_entry.comment = comment
                             history_entry.save()
                             logger.info(
@@ -549,7 +547,7 @@ def employee_view(request):
                     # Создаем запись в истории сотрудников
                     history_entry = EmployeeHistory.objects.create(
                         employee=employee,
-                        deletion_date=now().date(),
+                        deletion_date=timezone.now().date(),
                         comment=comment
                     )
                     logger.info(
@@ -856,7 +854,7 @@ def issue_phone_view(request):
     return JsonResponse({"success": False, "error": "Неверный запрос"}, status=400)
 
 
-# @login_required_custom
+@login_required_custom
 def return_phone_view(request):
     if request.method == "POST":
         phone_id = request.POST.get("phone_id")
