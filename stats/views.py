@@ -17,14 +17,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
-from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view
+from rest_framework.authtoken.models import Token
 
 logger = logging.getLogger(__name__)
+# py manage.py runserver 192.168.31.100:8000
 
 
 class LoginAPIView(APIView):
-    permission_classes = [AllowAny]
-
     def post(self, request):
         login_str = request.data.get('login')
         password = request.data.get('password')
@@ -316,7 +316,7 @@ def login_view(request):
 def logout_view(request):
     request.session.flush()  # Очищаем сессию
     logger.info("Пользователь вышел из системы")
-    return render(request, "login.html")
+    return redirect('login')
 
 
 @login_required_custom
@@ -539,7 +539,7 @@ def employee_view(request):
                             end_date__isnull=True
                         ).last()
                         if history_entry:
-                            history_entry.end_date = timezone.now().date()
+                            history_entry.end_date = now().date()
                             history_entry.comment = comment
                             history_entry.save()
                             logger.info(
@@ -550,7 +550,7 @@ def employee_view(request):
                     # Создаем запись в истории сотрудников
                     history_entry = EmployeeHistory.objects.create(
                         employee=employee,
-                        deletion_date=timezone.now().date(),
+                        deletion_date=now().date(),
                         comment=comment
                     )
                     logger.info(
@@ -903,7 +903,7 @@ def transfer_phone_view(request):
             history_entry = PhoneNumberHistory.objects.filter(
                 phone_number=phone, end_date__isnull=True).last()
             if history_entry:
-                history_entry.end_date = timezone.now().date()
+                history_entry.end_date = timezone.now().date(),
                 history_entry.comment = "Номер отдан сотруднику"
                 history_entry.save()
 
