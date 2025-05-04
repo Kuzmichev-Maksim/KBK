@@ -17,63 +17,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
-from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
-from rest_framework.decorators import permission_classes
 
 logger = logging.getLogger(__name__)
-
-
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def create_role(request):
-    name = request.data.get('name')
-    if not name:
-        return Response({'success': False, 'message': 'Название роли обязательно'}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        role, created = Role.objects.get_or_create(name=name)
-        if created:
-            return Response({'success': True, 'message': f'Роль "{name}" успешно создана', 'role_id': role.id}, status=status.HTTP_201_CREATED)
-        return Response({'success': True, 'message': f'Роль "{name}" уже существует', 'role_id': role.id}, status=status.HTTP_200_OK)
-    except Exception as e:
-        logger.error(f"Ошибка при создании роли: {str(e)}")
-        return Response({'success': False, 'message': f'Ошибка: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def create_admin(request):
-    login_hash = request.data.get('login_hash')
-    password_hash = request.data.get('password_hash')
-    role_id = request.data.get('role_id')
-
-    if not all([login_hash, password_hash, role_id]):
-        return Response({'success': False, 'message': 'login_hash, password_hash и role_id обязательны'}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        # Проверка, существует ли роль
-        role = Role.objects.get(id=role_id)
-        if role.name != "Администратор":
-            return Response({'success': False, 'message': 'Роль должна быть Администратор'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Проверка уникальности login_hash
-        if User.objects.filter(login_hash=login_hash).exists():
-            return Response({'success': False, 'message': 'Пользователь с таким логином уже существует'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Создание пользователя
-        user = User.objects.create(
-            login_hash=login_hash,
-            password_hash=password_hash,
-            role=role
-        )
-        logger.info(f"Администратор успешно создан с ID: {user.id}")
-        return Response({'success': True, 'message': 'Администратор успешно создан', 'user_id': user.id}, status=status.HTTP_201_CREATED)
-    except Role.DoesNotExist:
-        return Response({'success': False, 'message': 'Роль не найдена'}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        logger.error(f"Ошибка при создании администратора: {str(e)}")
-        return Response({'success': False, 'message': f'Ошибка: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class LoginAPIView(APIView):
@@ -592,7 +538,7 @@ def employee_view(request):
                             end_date__isnull=True
                         ).last()
                         if history_entry:
-                            history_entry.end_date = now().date()
+                            history_entry.end_date = timezone.now().date()
                             history_entry.comment = comment
                             history_entry.save()
                             logger.info(
@@ -603,7 +549,7 @@ def employee_view(request):
                     # Создаем запись в истории сотрудников
                     history_entry = EmployeeHistory.objects.create(
                         employee=employee,
-                        deletion_date=now().date(),
+                        deletion_date=timezone.now().date(),
                         comment=comment
                     )
                     logger.info(
