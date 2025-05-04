@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         login_str = request.data.get('login')
         password = request.data.get('password')
@@ -549,7 +550,7 @@ def employee_view(request):
                     # Создаем запись в истории сотрудников
                     history_entry = EmployeeHistory.objects.create(
                         employee=employee,
-                        deletion_date=timezone.now().date()
+                        deletion_date=timezone.now().date(),
                         comment=comment
                     )
                     logger.info(
