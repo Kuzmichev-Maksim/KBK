@@ -853,7 +853,6 @@ def issue_phone_view(request):
 
     return JsonResponse({"success": False, "error": "Неверный запрос"}, status=400)
 
-@csrf_exempt
 @login_required_custom
 def return_phone_view(request):
     if request.method == "POST":
@@ -898,7 +897,7 @@ def transfer_phone_view(request):
             history_entry = PhoneNumberHistory.objects.filter(
                 phone_number=phone, end_date__isnull=True).last()
             if history_entry:
-                history_entry.end_date = timezone.now().date()
+                history_entry.end_date = now().date()
                 history_entry.comment = "Номер отдан сотруднику"
                 history_entry.save()
 
