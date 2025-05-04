@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login_view, name='login_page'),
     path('dashboard/', employee_view, name='employee'),
-    path('logout/', logout_view, name='logout'),
+    path('logout/', logout_view, name='logout_page'),
     path('history/', history, name='history'),
     path('expenses/', expenses, name='expenses'),
     path('expenses/ajax/', expenses_ajax, name='expenses_ajax'),
