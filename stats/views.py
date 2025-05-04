@@ -549,7 +549,7 @@ def employee_view(request):
                     # Создаем запись в истории сотрудников
                     history_entry = EmployeeHistory.objects.create(
                         employee=employee,
-                        deletion_date=timezone.now().date(),
+                        deletion_date=timezone.now().date()
                         comment=comment
                     )
                     logger.info(
@@ -872,7 +872,7 @@ def return_phone_view(request):
         history_entry = PhoneNumberHistory.objects.filter(
             phone_number=phone, end_date__isnull=True).last()
         if history_entry:
-            history_entry.end_date = timezone.now().date(),
+            history_entry.end_date = timezone.now().date()
             history_entry.comment = comment
             history_entry.save()
 
@@ -902,7 +902,7 @@ def transfer_phone_view(request):
             history_entry = PhoneNumberHistory.objects.filter(
                 phone_number=phone, end_date__isnull=True).last()
             if history_entry:
-                history_entry.end_date = timezone.now().date(),
+                history_entry.end_date = timezone.now().date()
                 history_entry.comment = "Номер отдан сотруднику"
                 history_entry.save()
 
