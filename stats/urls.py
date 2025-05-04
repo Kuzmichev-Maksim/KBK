@@ -7,7 +7,7 @@ from django_prometheus import exports
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', login_view, name='login'),
+    path('', login_view, name='login_page'),
     path('dashboard/', employee_view, name='employee'),
     path('logout/', logout_view, name='logout'),
     path('history/', history, name='history'),
