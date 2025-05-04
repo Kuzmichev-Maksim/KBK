@@ -31,4 +31,6 @@ urlpatterns = [
     path('api/expense-stats/', ExpenseStatsAPIView.as_view(), name='expense-stats'),
     path('api/profile/', ProfileAPIView.as_view(), name='profile'),
     path('api/logout/', LogoutAPIView.as_view(), name='logout'),
+    path('api/create-role/', create_role, name='create_role'),
+    path('api/create-admin/', create_admin, name='create_admin'),
 ]

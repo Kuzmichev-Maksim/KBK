@@ -8,15 +8,14 @@ load_dotenv(dotenv_path)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv(
-    'SECRET_KEY', 'django-insecure-cawhf1uwg$cxtrnm%lg63w3wm)y#18*-z-&t0#vqkwt-v3257s')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-cawhf1uwg$cxtrnm%lg63w3wm)y#18*-z-&t0#vqkwt-v3257s')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['kbk.onrender.com']
 
 CORS_ALLOWED_ORIGINS = [
-    "https://your-app-name.onrender.com",
+    "https://kbk.onrender.com/",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]
