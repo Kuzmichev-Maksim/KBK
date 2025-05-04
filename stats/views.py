@@ -868,7 +868,7 @@ def return_phone_view(request):
 
         history_entry = PhoneNumberHistory.objects.filter(phone_number=phone, end_date__isnull=True).last()
         if history_entry:
-            history_entry.end_date = timezone.now().date(),
+            history_entry.end_date = timezone.now().date()
             history_entry.comment = comment
             history_entry.save()
 
