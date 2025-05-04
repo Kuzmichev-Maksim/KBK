@@ -19,7 +19,7 @@ from rest_framework import status
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
+from rest_framework.decorators import permission_classes
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ def create_role(request):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])  # Теперь работает благодаря импорту
+@permission_classes([AllowAny])
 def create_admin(request):
     login_hash = request.data.get('login_hash')
     password_hash = request.data.get('password_hash')
