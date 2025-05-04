@@ -17,11 +17,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
+from rest_framework.decorators import AllowAny
 
 logger = logging.getLogger(__name__)
 
 
 class LoginAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         login_str = request.data.get('login')
         password = request.data.get('password')
@@ -213,6 +215,7 @@ class ProfileAPIView(APIView):
 
 
 class LogoutAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             if 'user_id' in request.session:
