@@ -861,14 +861,12 @@ def return_phone_view(request):
         comment = request.POST.get("comment", "")
 
         phone = get_object_or_404(PhoneNumber, id=phone_id, status="занят")
-        employee_phone = get_object_or_404(
-            EmployeePhoneNumber, phone_number=phone)
+        employee_phone = get_object_or_404(EmployeePhoneNumber, phone_number=phone)
 
         phone.status = "свободен"
         phone.save()
 
-        history_entry = PhoneNumberHistory.objects.filter(
-            phone_number=phone, end_date__isnull=True).last()
+        history_entry = PhoneNumberHistory.objects.filter(phone_number=phone, end_date__isnull=True).last()
         if history_entry:
             history_entry.end_date = timezone.now().date(),
             history_entry.comment = comment
