@@ -854,7 +854,6 @@ def issue_phone_view(request):
     return JsonResponse({"success": False, "error": "Неверный запрос"}, status=400)
 
 
-@login_required_custom
 def return_phone_view(request):
     if request.method == "POST":
         phone_id = request.POST.get("phone_id")
