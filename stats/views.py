@@ -77,6 +77,7 @@ def create_admin(request):
 
 
 class LoginAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         login_str = request.data.get('login')
         password = request.data.get('password')
