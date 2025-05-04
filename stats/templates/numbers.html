@@ -938,28 +938,21 @@
           e.preventDefault();
           var formData = new FormData(this);
           $.ajax({
-              url: '/return_phone/',
-              type: 'POST',
-              data: formData,
-              processData: false,
-              contentType: false,
-              beforeSend: function(xhr) {
-                  xhr.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]').val());
-              },
-              success: function (data) {
-                  if (data.success) {
-                      $('#returnPhoneModal').fadeOut();
-                      location.reload();
-                  } else {
-                      $('#returnComment').after('<span class="error-message">' + data.error + '</span>');
-                  }
-              },
-              error: function (xhr, status, error) {
-                  console.error('Ошибка AJAX:', status, error, xhr.responseText);
-                  $('#returnComment').after('<span class="error-message">Ошибка сервера: ' + xhr.status + '</span>');
+            url: '/return_phone/',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+              if (data.success) {
+                $('#returnPhoneModal').fadeOut();
+                location.reload();
+              } else {
+                $('#returnComment').after('<span class="error-message">' + data.error + '</span>');
               }
+            }
           });
-      });
+        });
 
         // Открытие модального окна для передачи номера
         $('.transfer-phone-btn').click(function () {
