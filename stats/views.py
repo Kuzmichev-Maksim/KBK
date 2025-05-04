@@ -316,7 +316,7 @@ def login_view(request):
 def logout_view(request):
     request.session.flush()  # Очищаем сессию
     logger.info("Пользователь вышел из системы")
-    return redirect('login')
+    return render(request, "login.html")
 
 
 @login_required_custom
