@@ -132,10 +132,10 @@
               <th>ID</th>
               <th>Название</th>
               <th>Оператор</th>
-              {% comment %} <th>Лимит Минут</th>
+              <th>Лимит Минут</th>
               <th>Лимит ГБ</th>
               <th>Стоимость Минут</th>
-              <th>Стоимость ГБ</th> {% endcomment %}
+              <th>Стоимость ГБ</th>
               <th>Действия</th>
             </tr>
           </thead>
@@ -154,11 +154,11 @@
                     <button type="button" class="update-tariff-btn" 
                             data-id="{{ tariff.id }}" 
                             data-operator="{{ tariff.operator.id|default:'' }}"
-                            data-name="{{ tariff.name }}">Изменить</button>
-                            {% comment %} data-minute-limit="{{ tariff.minute_limit }}" 
+                            data-name="{{ tariff.name }}" 
+                            data-minute-limit="{{ tariff.minute_limit }}" 
                             data-gb-limit="{{ tariff.gb_limit }}" 
                             data-minute-cost="{{ tariff.minute_overage_cost }}" 
-                            data-gb-cost="{{ tariff.gb_overage_cost }}">Изменить</button> {% endcomment %}
+                            data-gb-cost="{{ tariff.gb_overage_cost }}">Изменить</button>
                     <button type="button" class="delete-tariff-btn" data-id="{{ tariff.id }}" data-name="{{ tariff.name }}">Удалить</button>
                   </div>
                 </td>
@@ -294,7 +294,7 @@
             </select>
             <span class="error-message" id="errorModalTariffOperator"></span>
           </div>
-          {% comment %} <div class="form-group">
+          <div class="form-group">
             <label for="modalTariffMinuteLimit">Лимит Минут:</label>
             <input class="input-field" type="number" name="tariff_minute_limit" id="modalTariffMinuteLimit" min="0" required />
             <span class="error-message" id="errorModalTariffMinuteLimit"></span>
@@ -313,7 +313,7 @@
             <label for="modalTariffGbCost">Стоимость ГБ:</label>
             <input class="input-field" type="number" step="0.01" name="tariff_gb_cost" id="modalTariffGbCost" min="0" required />
             <span class="error-message" id="errorModalTariffGbCost"></span>
-          </div> {% endcomment %}
+          </div>
           <button class="submit-button" type="submit">Изменить</button>
         </form>
       </div>
@@ -428,7 +428,7 @@
               </select>
               <span class="error-message" id="errorNewTariffOperator"></span>
             </div>
-            {% comment %} <div class="form-group">
+            <div class="form-group">
               <label for="new_tariff_minute_limit">Лимит Минут:</label>
               <input class="input-field" type="number" name="new_tariff_minute_limit" id="new_tariff_minute_limit" placeholder="Лимит Минут" min="0" required />
               <span class="error-message" id="errorNewTariffMinuteLimit"></span>
@@ -447,7 +447,7 @@
               <label for="new_tariff_gb_cost">Стоимость ГБ:</label>
               <input class="input-field" type="number" step="0.01" name="new_tariff_gb_cost" id="new_tariff_gb_cost" placeholder="Стоимость ГБ" min="0" required />
               <span class="error-message" id="errorNewTariffGbCost"></span>
-            </div> {% endcomment %}
+            </div>
             <button class="submit-button" type="submit" name="add_tariff">Добавить Тариф</button>
           </form>
         </div>
