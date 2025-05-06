@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         login_str = request.data.get('login')
         password = request.data.get('password')
@@ -217,6 +218,7 @@ class ProfileAPIView(APIView):
 
 class LogoutAPIView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         try:
             if 'user_id' in request.session:
@@ -857,6 +859,7 @@ def issue_phone_view(request):
 
     return JsonResponse({"success": False, "error": "Неверный запрос"}, status=400)
 
+
 @login_required_custom
 def return_phone_view(request):
     if request.method == "POST":
@@ -864,12 +867,14 @@ def return_phone_view(request):
         comment = request.POST.get("comment", "")
 
         phone = get_object_or_404(PhoneNumber, id=phone_id, status="занят")
-        employee_phone = get_object_or_404(EmployeePhoneNumber, phone_number=phone)
+        employee_phone = get_object_or_404(
+            EmployeePhoneNumber, phone_number=phone)
 
         phone.status = "свободен"
         phone.save()
 
-        history_entry = PhoneNumberHistory.objects.filter(phone_number=phone, end_date__isnull=True).last()
+        history_entry = PhoneNumberHistory.objects.filter(
+            phone_number=phone, end_date__isnull=True).last()
         if history_entry:
             history_entry.end_date = timezone.now().date()
             history_entry.comment = comment
