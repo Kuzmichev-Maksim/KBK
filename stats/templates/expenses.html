@@ -17,7 +17,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="{% static 'js/base64.js' %}"></script>
-    <!-- Передача данных в JavaScript -->
     <script>
       window.companies = [
         {% for company in companies %}
@@ -31,16 +30,13 @@
 
     <h1>Статистика расходов</h1>
 
-    <!-- Вкладка -->
     <ul class="tab-menu">
       <li class="active" data-tab="expenses-tab">Расходы</li>
       <li class="active" data-tab="import-tab">Импорт расходов</li>
       <li class="add-tab" id="download-pdf" disabled>Скачать PDF</li>
     </ul>
 
-    <!-- Контент вкладок -->
     <div id="expenses-tab" class="tab-content active">
-      <!-- Фильтры -->
       <form id="filter-form" class="filter-container">
         <div class="custom-filter-container">
           <label for="start_date">Период:</label>
@@ -81,10 +77,8 @@
         </div>
       </form>
 
-      <!-- Общая сумма расходов -->
       <p class="total-expenses"><strong>Общая сумма расходов:</strong> <span id="total-expenses">0</span> руб.</p>
 
-      <!-- Графики -->
       <div class="chart-container">
         <div class="chart-item">
           <canvas id="companyChart"></canvas>
@@ -94,7 +88,6 @@
         </div>
       </div>
 
-      <!-- Таблица -->
       <table id="expenses-table" border="1">
         <thead>
           <tr>
@@ -153,7 +146,6 @@
 
         var expensesTable = $('#expenses-table').DataTable(options);
 
-        // Устанавливаем текущий месяц по умолчанию для фильтра
         let startDateInput = document.getElementById("start_date");
         if (startDateInput) {
           let today = new Date();
@@ -163,7 +155,6 @@
           $('#download-pdf').prop('disabled', false);
         }
 
-        // Устанавливаем текущий месяц по умолчанию для импорта
         let usagePeriodInput = document.getElementById("usage_period");
         if (usagePeriodInput) {
           let today = new Date();
@@ -172,20 +163,16 @@
           usagePeriodInput.value = `${year}-${month}`;
         }
 
-        // Извлечение данных для фильтров с сортировкой по русскому алфавиту
         const companyNames = window.companies.map(c => c.name).sort((a, b) => a.localeCompare(b, 'ru'));
 
-        // Функция для отображения списка элементов в выпадающем меню
         function showCustomList(inputElement, dropElement, items, filterType, selectElement, maxItems = Infinity) {
           const filterValue = inputElement.val().toLowerCase().trim();
           let filteredItems = items;
 
-          // Фильтрация по введённому значению
           filteredItems = filterValue
             ? filteredItems.filter(item => item.toLowerCase().includes(filterValue))
             : filteredItems;
 
-          // Сортировка элементов в алфавитном порядке (от А до Я) с учётом русского языка
           filteredItems.sort((a, b) => a.localeCompare(b, 'ru'));
           const displayItems = filteredItems.slice(0, maxItems);
 
@@ -215,7 +202,6 @@
           dropElement.css('height', displayItems.length > 0 ? 'auto' : '0');
         }
 
-        // Обработчики для кастомных выпадающих списков
         $('#expenses-tab .custom-filter input').each(function () {
           const input = $(this);
           const drop = input.siblings('.custom-drop');
@@ -234,7 +220,6 @@
             showCustomList(input, drop, items, filterType, selectElement, Infinity);
           });
 
-          // Автоматическая фильтрация при очистке поля
           input.on('input', function () {
             if (!$(this).val()) {
               selectElement.val('');
@@ -243,7 +228,6 @@
           });
         });
 
-        // Закрытие выпадающего списка при клике вне
         $(document).click(function (e) {
           $('.custom-filter input').each(function () {
             const input = $(this);
@@ -255,24 +239,20 @@
           });
         });
 
-        // Управление состоянием кнопки "Скачать PDF" и автоматическая фильтрация при изменении периода
         $('#start_date').on('change', function () {
           const startDate = $(this).val();
           $('#download-pdf').prop('disabled', !startDate);
           loadExpenses(true);
         });
 
-        // Автоматическая фильтрация при изменении лицевого счета или сотрудника
         $('#account, #employee').on('change', function () {
           loadExpenses(false);
         });
 
-        // Загружаем расходы сразу после установки даты
         loadExpenses(true);
 
-        // Переключение вкладок
         $('.tab-menu li').click(function () {
-          if ($(this).attr('id') === 'download-pdf') return; // Не переключать вкладку для кнопки Скачать PDF
+          if ($(this).attr('id') === 'download-pdf') return;
 
           $('.tab-menu li').removeClass('active');
           $(this).addClass('active');
@@ -281,7 +261,6 @@
           $('#' + $(this).data('tab')).addClass('active');
         });
 
-        // Обработка импорта CSV
         $('#import-form').on('submit', function (e) {
           e.preventDefault();
           let formData = new FormData(this);
@@ -306,7 +285,6 @@
           });
         });
 
-        // Функция для преобразования даты в формат "Март 2025"
         function formatDateToMonthYear(dateString) {
           if (!dateString) return "Не выбран";
 
@@ -322,7 +300,6 @@
           return `${month} ${year}`;
         }
 
-        // Скачивание PDF
         $('#download-pdf').click(function () {
           if ($(this).prop('disabled')) return;
           const { jsPDF } = window.jspdf;

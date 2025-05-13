@@ -1,13 +1,8 @@
-// home.js
-
 document.addEventListener('DOMContentLoaded', function () {
-    // Проверяем, существует ли уже DataTable
     if ($.fn.DataTable.isDataTable('#employeeTable')) {
-        // Уничтожаем существующую таблицу
         $('#employeeTable').DataTable().destroy();
     }
 
-    // Инициализация DataTables с ручным переводом
     const employeeTable = new DataTable('#employeeTable', {
         language: {
             lengthMenu: "Показать _MENU_ записей",
@@ -24,9 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 previous: "Предыдущая"
             }
         },
-        pagingType: 'full_numbers', // Пагинация с номерами страниц
-        lengthMenu: [10, 25, 50, 100], // Выбор количества записей на странице
-        dom: '<"top"lf>rt<"bottom"ip><"clear">' // Расположение элементов интерфейса
+        pagingType: 'full_numbers',
+        lengthMenu: [10, 25, 50, 100],
+        dom: '<"top"lf>rt<"bottom"ip><"clear">'
     });
 
     // // Обработка кнопки "Вернуть номер"

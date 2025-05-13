@@ -22,7 +22,6 @@
     <h1>Управление данными</h1>
 
     <div class="container">
-      <!-- Навигация по вкладкам -->
       <ul class="tab-menu">
         <li class="active" data-tab="companies-tab">Компании</li>
         <li data-tab="departments-tab">Отделы</li>
@@ -32,8 +31,6 @@
         <li class="add-tab" id="openAddModal">Добавить</li>
       </ul>
 
-      <!-- Контент вкладок -->
-      <!-- Компании -->
       <div id="companies-tab" class="tab-content active">
         <h2>Компании</h2>
         <table id="company-table" border="1">
@@ -65,7 +62,6 @@
         </table>
       </div>
 
-      <!-- Отделы -->
       <div id="departments-tab" class="tab-content">
         <h2>Отделы</h2>
         <table id="department-table" border="1">
@@ -93,7 +89,6 @@
         </table>
       </div>
 
-      <!-- Должности -->
       <div id="positions-tab" class="tab-content">
         <h2>Должности</h2>
         <table id="position-table" border="1">
@@ -123,7 +118,6 @@
         </table>
       </div>
 
-      <!-- Тарифы -->
       <div id="tariffs-tab" class="tab-content">
         <h2>Тарифы</h2>
         <table id="tariff-table" border="1">
@@ -168,7 +162,6 @@
         </table>
       </div>
 
-      <!-- Операторы -->
       <div id="operators-tab" class="tab-content">
         <h2>Операторы</h2>
         <table id="operator-table" border="1">
@@ -197,8 +190,6 @@
       </div>
     </div>
 
-    <!-- Модальные окна для обновления записей -->
-    <!-- Company Modal -->
     <div class="modal-overlay" id="updateCompanyModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseCompany">×</span>
@@ -227,7 +218,6 @@
       </div>
     </div>
 
-    <!-- Department Modal -->
     <div class="modal-overlay" id="updateDepartmentModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseDepartment">×</span>
@@ -246,7 +236,6 @@
       </div>
     </div>
 
-    <!-- Position Modal -->
     <div class="modal-overlay" id="updatePositionModal">
       <div class="modal-content">
         <span class="modal-close" id="modalClosePosition">×</span>
@@ -270,7 +259,6 @@
       </div>
     </div>
 
-    <!-- Tariff Modal -->
     <div class="modal-overlay" id="updateTariffModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseTariff">×</span>
@@ -319,7 +307,6 @@
       </div>
     </div>
 
-    <!-- Operator Modal -->
     <div class="modal-overlay" id="updateOperatorModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseOperator">×</span>
@@ -338,7 +325,6 @@
       </div>
     </div>
 
-    <!-- Add Modal -->
     <div class="modal-overlay" id="addModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseAdd">×</span>
@@ -466,7 +452,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для подтверждения удаления -->
     <div class="modal-overlay" id="deleteConfirmModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseDelete">×</span>

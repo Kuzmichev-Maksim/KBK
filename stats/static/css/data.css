@@ -1,4 +1,3 @@
-/* Основные стили */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -8,7 +7,6 @@ body {
     font-family: cursive;
 }
 
-/* Заголовок */
 h1 {
     text-align: center;
     font-size: 2.5em;
@@ -16,7 +14,6 @@ h1 {
     color: #23889f;
 }
 
-/* Таблицы */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -25,28 +22,20 @@ table {
 
 .actions-column {
     white-space: nowrap;
-    /* Отключает перенос строк */
     text-align: right;
-    /* Прижимает содержимое к правому краю */
     width: 1%;
-    /* Минимальная ширина, подстраивается под содержимое */
 }
 
 .id-column {
     white-space: nowrap;
-    /* Отключает перенос строк */
     width: 1%;
-    /* Минимальная ширина, подстраивается под содержимое */
 }
 
 .id-container {
     display: flex;
     justify-content: flex-start;
-    /* Прижать кнопки к правому краю */
     gap: 8px;
-    /* Расстояние между кнопками */
     margin-right: 10px;
-    /* Отступ от правого края */
 }
 
 th,
@@ -72,7 +61,6 @@ tr:hover {
     background-color: #f1f1f1;
 }
 
-/* Кнопки */
 button {
     padding: 8px 15px;
     background-color: #8cd6f4;
@@ -88,7 +76,6 @@ button:hover {
     background-color: #70cff5;
 }
 
-/* Формы */
 .add-form {
     background-color: #fff;
     padding: 30px;
@@ -151,7 +138,6 @@ button:hover {
     background-color: #004d67;
 }
 
-/* Поля поиска */
 .dataTables_filter input[type="search"] {
     width: 200px;
     padding: 10px;
@@ -167,7 +153,6 @@ button:hover {
     border-color: #23889f;
 }
 
-/* Пагинация */
 .dataTables_paginate .paginate_button {
     padding: 8px 12px;
     margin: 0 2px;
@@ -193,38 +178,29 @@ button:hover {
     border-color: #23889f;
 }
 
-/* Меньшая форма добавления */
 .add-form {
     background-color: #fff;
     padding: 20px;
-    /* Уменьшенный отступ */
     border-radius: 8px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
     max-width: 450px;
-    /* Уменьшенная ширина */
     margin: 30px auto;
     border: 1px solid #ddd;
 }
 
-/* Заголовок формы */
 .add-form h3 {
     color: #23889f;
     font-size: 1.4em;
-    /* Уменьшенный размер заголовка */
     margin-bottom: 15px;
     text-align: center;
 }
 
-/* Поля ввода */
 .input-field {
     width: 100%;
     padding: 10px;
-    /* Меньший padding */
     border: 1px solid #ddd;
     border-radius: 6px;
-    /* Меньший радиус */
     font-size: 0.95em;
-    /* Уменьшенный размер шрифта */
     margin-bottom: 12px;
     box-sizing: border-box;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -243,12 +219,9 @@ button:hover {
     background-color: #23889f;
     color: #fff;
     padding: 10px 15px;
-    /* Уменьшенный padding */
     font-size: 1em;
-    /* Уменьшенный размер шрифта */
     border: none;
     border-radius: 6px;
-    /* Меньший радиус */
     cursor: pointer;
     width: 100%;
     text-align: center;
@@ -264,7 +237,6 @@ button:hover {
     background-color: #004d67;
 }
 
-/* Адаптивная форма */
 @media (max-width: 768px) {
     .add-form {
         padding: 15px;
@@ -282,20 +254,14 @@ button:hover {
 .button-container {
     display: flex;
     justify-content: flex-end;
-    /* Прижать кнопки к правому краю */
     gap: 8px;
-    /* Расстояние между кнопками */
     margin-right: 10px;
-    /* Отступ от правого края */
 }
 
 .button-container form {
     margin: 0;
-    /* Убираем отступы формы */
 }
 
-
-/* Стили для вкладок */
 .tab-menu {
     list-style: none;
     padding: 0;
@@ -333,7 +299,6 @@ button:hover {
     display: block;
 }
 
-/* Стили для модальных окон */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -398,7 +363,6 @@ button:hover {
     color: white;
 }
 
-/* Стили для выбора типа добавления (стилизованный список) */
 #addChoiceList {
     list-style: none;
     padding: 0;
@@ -427,7 +391,6 @@ button:hover {
     font-weight: bold;
 }
 
-/* Стили для селектора выбора типа добавления */
 .add-type-select {
     width: 100%;
     padding: 10px;

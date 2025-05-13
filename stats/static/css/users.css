@@ -1,4 +1,3 @@
-/* Основные стили */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -8,7 +7,6 @@ body {
     font-family: cursive;
 }
 
-/* Заголовок */
 h1 {
     text-align: center;
     font-size: 2.5em;
@@ -16,7 +14,6 @@ h1 {
     color: #23889f;
 }
 
-/* Таблицы */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -64,7 +61,6 @@ tr:hover {
     background-color: #f1f1f1;
 }
 
-/* Кнопки */
 button {
     padding: 8px 15px;
     background-color: #8cd6f4;
@@ -80,7 +76,6 @@ button:hover {
     background-color: #70cff5;
 }
 
-/* Формы */
 .add-form {
     background-color: #fff;
     padding: 30px;
@@ -142,7 +137,6 @@ button:hover {
     background-color: #004d67;
 }
 
-/* Поля поиска */
 .dataTables_filter input[type="search"] {
     width: 200px;
     padding: 10px;
@@ -158,7 +152,6 @@ button:hover {
     border-color: #23889f;
 }
 
-/* Пагинация */
 .dataTables_paginate .paginate_button {
     padding: 8px 12px;
     margin: 0 2px;
@@ -183,7 +176,6 @@ button:hover {
     border-color: #23889f;
 }
 
-/* Меньшая форма добавления */
 .add-form {
     background-color: #fff;
     padding: 20px;
@@ -194,7 +186,6 @@ button:hover {
     border: 1px solid #ddd;
 }
 
-/* Заголовок формы */
 .add-form h3 {
     color: #23889f;
     font-size: 1.4em;
@@ -202,7 +193,6 @@ button:hover {
     text-align: center;
 }
 
-/* Поля ввода */
 .input-field {
     width: 100%;
     padding: 10px;
@@ -223,12 +213,10 @@ button:hover {
     background-color: #fff;
 }
 
-/* Скрытие оригинального select */
 .hidden-select {
     display: none;
 }
 
-/* Кнопка отправки */
 .submit-button {
     background-color: #23889f;
     color: #fff;
@@ -264,7 +252,6 @@ button:hover {
     margin: 0;
 }
 
-/* Стили для вкладок */
 .tab-menu {
     list-style: none;
     padding: 0;
@@ -302,7 +289,6 @@ button:hover {
     display: block;
 }
 
-/* Стили для фильтров на основной вкладке */
 .filter-container {
     margin-bottom: 20px;
     display: flex;
@@ -432,7 +418,6 @@ button:hover {
     border-color: red;
 }
 
-/* Стили для модальных окон */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -522,7 +507,6 @@ button:hover {
     color: white;
 }
 
-/* Стили для кастомных выпадающих списков в модальных окнах */
 .modal-content .custom-filter-container {
     width: 100%;
 }
@@ -621,7 +605,6 @@ button:hover {
     background: #1b6b7d;
 }
 
-/* Стили для выбора типа добавления (стилизованный список) */
 #addChoiceList {
     list-style: none;
     padding: 0;
@@ -650,7 +633,6 @@ button:hover {
     font-weight: bold;
 }
 
-/* Стили для селектора выбора типа добавления */
 .add-type-select {
     width: 100%;
     padding: 10px;
@@ -668,7 +650,6 @@ button:hover {
     background-color: #fff;
 }
 
-/* Адаптивность */
 @media (max-width: 1024px) {
     .filter-container {
         flex-direction: column;

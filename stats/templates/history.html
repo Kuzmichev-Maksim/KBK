@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="{% static 'css/header.css' %}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="icon" type="image/x-icon" href="{% static 'images/KBK.ico' %}" />
-    <!-- Подключение jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
   </head>
   <body>
@@ -25,7 +24,6 @@
     </ul>
 
     <div class="content-wrapper">
-      <!-- Левый блок с фильтром компаний -->
       <div class="sidebar">
         <div class="filter-container">
           <label for="companyFilter">Компания:</label>
@@ -36,9 +34,7 @@
         </div>
       </div>
 
-      <!-- Основной контент -->
       <main>
-        <!-- Вкладка истории номеров -->
         <div id="phone-numbers-tab" class="tab-content {% if request.GET.tab != 'employee-history-tab' %}active{% endif %}">
           <div class="phone-filter">
             <input type="text" id="phoneFilter" placeholder="Поиск по номеру..." />
@@ -102,7 +98,6 @@
           <button id="loadMorePhones" style="display: none;">Показать больше</button>
         </div>
 
-        <!-- Вкладка истории сотрудников -->
         <div id="employee-history-tab" class="tab-content {% if request.GET.tab == 'employee-history-tab' %}active{% endif %}">
           <form method="post">
             {% csrf_token %}
@@ -146,7 +141,6 @@
     </div>
 
     <script>
-      // Переключение вкладок
       document.querySelectorAll('.tab-menu li').forEach((tab) => {
         tab.addEventListener('click', () => {
           document.querySelectorAll('.tab-menu li').forEach((t) => t.classList.remove('active'));
@@ -154,7 +148,6 @@
           document.querySelectorAll('.tab-content').forEach((content) => content.classList.remove('active'));
           document.getElementById(tab.dataset.tab).classList.add('active');
 
-          // Показываем/скрываем фильтр в зависимости от активной вкладки
           const companyFilterInput = document.querySelector('#companyFilter');
           const employeeTab = document.getElementById('employee-history-tab');
           if (employeeTab.classList.contains('active')) {
@@ -193,7 +186,6 @@
         });
       });
 
-      // Ограничение количества карточек на вкладке "История номеров"
       const initialPhoneLimit = 6;
       const phoneIncrement = 6;
       let currentPhoneLimit = initialPhoneLimit;
@@ -220,7 +212,6 @@
         }
       }
 
-      // Ограничение количества сотрудников на вкладке "История сотрудников"
       const initialEmployeeLimit = 5;
       const employeeIncrement = 5;
       let currentEmployeeLimit = initialEmployeeLimit;
@@ -247,7 +238,6 @@
         }
       }
 
-      // Поиск по номерам
       const phoneFilterInput = document.querySelector('#phoneFilter');
       phoneFilterInput.addEventListener('input', function () {
         const filterValue = phoneFilterInput.value.toLowerCase().trim();
@@ -293,7 +283,6 @@
         const companyFilterInput = document.querySelector('#companyFilter');
         const companyDrop = document.querySelector('.company-drop');
 
-        // Список компаний из шаблона
         const companies = [
           'Все компании',
           {% for company in companies %}

@@ -1,4 +1,3 @@
-/* Основные стили */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -11,7 +10,6 @@ body {
     height: 100vh;
 }
 
-/* Контейнер формы логина */
 .login-container {
     background-color: #fff;
     padding: 30px;
@@ -23,21 +21,18 @@ body {
     text-align: center;
 }
 
-/* Заголовок */
 h2 {
     color: #23889f;
     font-size: 1.8em;
     margin-bottom: 20px;
 }
 
-/* Форма */
 .login-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-/* Поля ввода */
 .input-field {
     width: 100%;
     padding: 10px;
@@ -57,7 +52,6 @@ h2 {
     background-color: #fff;
 }
 
-/* Кнопка входа */
 .submit-button {
     background-color: #23889f;
     color: #fff;
@@ -81,7 +75,6 @@ h2 {
     background-color: #004d67;
 }
 
-/* Сообщение об ошибке */
 .error-message {
     color: red;
     font-size: 0.9em;
@@ -89,7 +82,6 @@ h2 {
     display: none;
 }
 
-/* Адаптивность */
 @media (max-width: 480px) {
     .login-container {
         padding: 20px;

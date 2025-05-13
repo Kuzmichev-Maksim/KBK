@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ошибка {{ error_code }}</title>
 
-    <!-- Подключаем стили, которые уже используются на сайте -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/users.css' %}">
     <link rel="stylesheet" href="{% static 'css/header.css' %}">
@@ -13,7 +12,6 @@
     <link rel="icon" type="image/x-icon" href="{% static 'images/KBK.ico' %}">
 </head>
 <body>
-    <!-- Включаем заголовок, чтобы сохранить стиль сайта -->
     {% include 'header.html' %}
 
     <div class="container">
@@ -26,7 +24,6 @@
     </div>
 
     <style>
-        /* Стили для страницы ошибок, чтобы они соответствовали общему стилю сайта */
         .error-container {
             text-align: center;
             padding: 40px;
@@ -38,7 +35,7 @@
         }
 
         .error-container h2 {
-            color: #d9534f; /* Цвет для кода ошибки (красный) */
+            color: #d9534f;
             font-size: 2.5em;
             margin-bottom: 20px;
         }

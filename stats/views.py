@@ -237,21 +237,17 @@ class LogoutAPIView(APIView):
                 'message': f'Ошибка при выходе: {str(e)}'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# Декоратор для проверки авторизации и роли
-
 
 def login_required_custom(view_func):
     def wrapper(request, *args, **kwargs):
-        # Проверка, авторизован ли пользователь
         if not request.session.get('user_id'):
             messages.error(request, "Необходимо авторизоваться")
             return redirect('login')
 
-        # Проверка роли пользователя
         user_role = request.session.get('role')
         if user_role != "Администратор":
             messages.error(request, "Доступ разрешён только администраторам")
-            request.session.flush()  # Очищаем сессию
+            request.session.flush()
             return redirect('login')
 
         return view_func(request, *args, **kwargs)
@@ -267,22 +263,17 @@ def login_view(request):
             messages.error(request, "Введите логин и пароль")
             return render(request, "login.html")
 
-        # Удаляем пробелы в начале и конце
         login = login.strip()
         password = password.strip()
 
-        # Логируем введённые данные (без пароля для безопасности)
         logger.info(f"Попытка авторизации с логином: {login}")
 
-        # Хешируем введённый логин и пароль
         login_hash = hashlib.sha256(login.encode('utf-8')).hexdigest()
         password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
-        # Логируем хеши для отладки
         logger.info(f"Сгенерированный login_hash: {login_hash}")
         logger.info(f"Сгенерированный password_hash: {password_hash}")
 
-        # Проверяем, существует ли пользователь с таким хешем логина
         try:
             user = User.objects.get(login_hash=login_hash)
             logger.info(
@@ -292,9 +283,7 @@ def login_view(request):
             messages.error(request, "Неверный логин или пароль")
             return render(request, "login.html")
 
-        # Проверяем пароль
         if user.check_password(password):
-            # Проверяем роль перед установкой сессии
             if user.role.name != "Администратор":
                 messages.error(
                     request, "Доступ разрешён только администраторам")
@@ -309,15 +298,13 @@ def login_view(request):
             messages.error(request, "Неверный логин или пароль")
             return render(request, "login.html")
 
-    # Если метод GET, показываем форму логина
     if request.session.get('user_id'):
-        # Если уже авторизован, перенаправляем на главную страницу
         return redirect('employee')
     return render(request, "login.html")
 
 
 def logout_view(request):
-    request.session.flush()  # Очищаем сессию
+    request.session.flush()
     logger.info("Пользователь вышел из системы")
     return render(request, "login.html")
 
@@ -325,7 +312,6 @@ def logout_view(request):
 @login_required_custom
 def history(request):
     if request.method == "POST":
-        # Обработка комментария для истории номеров
         history_id = request.POST.get("history_id")
         if history_id:
             comment = request.POST.get(f"comment_{history_id}")
@@ -333,26 +319,26 @@ def history(request):
                 history = get_object_or_404(PhoneNumberHistory, id=history_id)
                 history.comment = comment
                 history.save()
+                logger.info(f"Комментарий для истории номера ID {history_id} обновлён: {comment}")
                 return HttpResponseRedirect(reverse("history") + "?tab=phone-numbers-tab")
 
-        # Обработка комментария для истории сотрудников
         employee_history_id = request.POST.get("employee_history_id")
         if employee_history_id:
-            comment = request.POST.get(
-                f"employee_comment_{employee_history_id}")
+            comment = request.POST.get(f"employee_comment_{employee_history_id}")
             if comment is not None:
-                history = get_object_or_404(
-                    EmployeeHistory, id=employee_history_id)
+                history = get_object_or_404(EmployeeHistory, id=employee_history_id)
                 history.comment = comment
                 history.save()
+                logger.info(f"Комментарий для истории сотрудника ID {employee_history_id} обновлён: {comment}")
                 return HttpResponseRedirect(reverse("history") + "?tab=employee-history-tab")
 
         active_tab = request.POST.get("active_tab", "phone-numbers-tab")
         return HttpResponseRedirect(reverse("history") + f"?tab={active_tab}")
 
-    # История номеров
+    # Получаем все записи истории номеров, включая завершённые
     histories = PhoneNumberHistory.objects.select_related(
-        'phone_number', 'employee', 'employee__company').order_by('phone_number__number', 'start_date', 'end_date')
+        'phone_number', 'employee', 'employee__company'
+    ).order_by('phone_number__number', 'start_date')
     grouped_histories = {}
     for history in histories:
         phone_number = history.phone_number.number
@@ -367,13 +353,13 @@ def history(request):
             "employee_info": employee_info,
             "start_date": history.start_date,
             "end_date": history.end_date,
-            "comment": history.comment,
-            "company": company_name  # Добавляем компанию
+            "comment": history.comment or '-',
+            "company": company_name
         })
 
-    # История сотрудников (только для status=False)
     employee_histories = EmployeeHistory.objects.filter(employee__status=False).select_related(
-        'employee', 'employee__company', 'employee__position', 'employee__department').order_by('employee__last_name', 'deletion_date')
+        'employee', 'employee__company', 'employee__position', 'employee__department'
+    ).order_by('employee__last_name', 'deletion_date')
     grouped_employee_histories = {}
     for history in employee_histories:
         employee = history.employee
@@ -384,14 +370,13 @@ def history(request):
         grouped_employee_histories[employee_info].append({
             "id": history.id,
             "deletion_date": history.deletion_date,
-            "comment": history.comment,
+            "comment": history.comment or '-',
             "company": history.company if hasattr(history, 'company') else employee.company.name,
             "city": history.city if hasattr(history, 'city') else employee.city,
             "position": history.position if hasattr(history, 'position') else employee.position.name,
             "department": history.department if hasattr(history, 'department') else employee.department.name
         })
 
-    # Получение списка компаний
     companies = Company.objects.all().order_by('name')
 
     return render(request, 'history.html', {
@@ -400,13 +385,11 @@ def history(request):
         'companies': companies
     })
 
-
 @login_required_custom
 def employee_view(request):
     if request.method == "POST":
         logger.info("Получен POST-запрос: %s", request.POST)
 
-        # Проверка уникальности для AJAX-запроса
         if 'check_unique' in request.POST:
             last_name = request.POST.get('new_employee_last_name')
             first_name = request.POST.get('new_employee_first_name')
@@ -418,7 +401,6 @@ def employee_view(request):
             position_id = request.POST.get('new_employee_position')
             department_id = request.POST.get('new_employee_department')
 
-            # Учитываем только активных сотрудников (status=True)
             exists = Employee.objects.filter(
                 last_name=last_name,
                 first_name=first_name,
@@ -428,12 +410,11 @@ def employee_view(request):
                 company_id=company_id,
                 position_id=position_id,
                 department_id=department_id,
-                status=True  # Добавляем фильтр по status
+                status=True
             ).exists()
             logger.info("Проверка уникальности: %s", exists)
             return JsonResponse({'exists': exists})
 
-        # Добавление нового сотрудника
         elif 'add_employee' in request.POST:
             last_name = request.POST.get("new_employee_last_name")
             first_name = request.POST.get("new_employee_first_name")
@@ -450,7 +431,6 @@ def employee_view(request):
 
             if all([last_name, first_name, personnel_number, city, company_id, position_id, department_id]):
                 try:
-                    # Проверка уникальности табельного номера только среди активных сотрудников (status=True)
                     if Employee.objects.filter(personnel_number=personnel_number, status=True).exists():
                         logger.warning(
                             "Табельный номер %s уже используется другим активным сотрудником", personnel_number)
@@ -479,20 +459,17 @@ def employee_view(request):
             else:
                 return JsonResponse({'error': 'Все поля должны быть заполнены'})
 
-        # Обновление существующего сотрудника
         elif "update_employee" in request.POST:
             employee_id = request.POST.get("update_employee")
             employee = get_object_or_404(Employee, id=employee_id)
             new_personnel_number = request.POST.get(
                 "employee_personnel_number")
 
-            # Проверка уникальности табельного номера (исключая текущего сотрудника, и учитывая только status=True)
             if Employee.objects.filter(personnel_number=new_personnel_number, status=True).exclude(id=employee_id).exists():
                 logger.warning(
                     "Табельный номер %s уже используется другим сотрудником", new_personnel_number)
                 return JsonResponse({'error': 'Табельный номер уже используется другим сотрудником'})
 
-            # Обновление данных сотрудника
             try:
                 employee.last_name = request.POST.get("employee_last_name")
                 employee.first_name = request.POST.get("employee_first_name")
@@ -516,7 +493,6 @@ def employee_view(request):
                 logger.error("Ошибка при обновлении: %s", str(e))
                 return JsonResponse({'error': f'Ошибка: {str(e)}'})
 
-        # Удаление сотрудника (изменение статуса на False)
         elif "delete_employee" in request.POST:
             employee_id = request.POST.get("delete_employee")
             comment = request.POST.get("comment", "Сотрудник удален")
@@ -525,7 +501,6 @@ def employee_view(request):
                 "Попытка изменения статуса сотрудника ID: %s с комментарием: %s", employee_id, comment)
             try:
                 with transaction.atomic():
-                    # Освобождаем все закрепленные номера
                     employee_phones = EmployeePhoneNumber.objects.filter(
                         employee=employee)
                     logger.info("Найдено %d номеров для освобождения",
@@ -535,7 +510,6 @@ def employee_view(request):
                         phone.status = "свободен"
                         phone.save()
 
-                        # Обновляем историю номера
                         history_entry = PhoneNumberHistory.objects.filter(
                             phone_number=phone,
                             employee=employee,
@@ -550,7 +524,6 @@ def employee_view(request):
 
                         emp_phone.delete()
 
-                    # Создаем запись в истории сотрудников
                     history_entry = EmployeeHistory.objects.create(
                         employee=employee,
                         deletion_date=timezone.now().date(),
@@ -559,7 +532,6 @@ def employee_view(request):
                     logger.info(
                         "Создана запись в EmployeeHistory с ID: %s", history_entry.id)
 
-                    # Меняем статус сотрудника на False
                     employee.status = False
                     employee.save()
                     logger.info(
@@ -570,7 +542,6 @@ def employee_view(request):
                     "Ошибка при изменении статуса сотрудника: %s", str(e), exc_info=True)
                 return JsonResponse({'error': f'Ошибка: {str(e)}'})
 
-    # Получение данных для отображения (только сотрудники с status=True)
     employees = Employee.objects.filter(status=True)
     companies = Company.objects.all()
     positions = Position.objects.all()
@@ -589,7 +560,6 @@ def data_view(request):
     if request.method == "POST":
         active_tab = request.POST.get("active_tab", "companies-tab")
 
-        # --- Company ---
         if "add_company" in request.POST:
             name = request.POST.get("new_company_name")
             kpp = request.POST.get("new_company_kpp")
@@ -609,7 +579,6 @@ def data_view(request):
             company = get_object_or_404(Company, id=company_id)
             company.delete()
 
-        # --- Department ---
         elif "add_department" in request.POST:
             name = request.POST.get("new_department_name")
             if name:
@@ -624,7 +593,6 @@ def data_view(request):
             department = get_object_or_404(Department, id=department_id)
             department.delete()
 
-        # --- Position ---
         elif "add_position" in request.POST:
             name = request.POST.get("new_position_name")
             salary_limit = request.POST.get("new_position_salary_limit")
@@ -641,7 +609,6 @@ def data_view(request):
             position = get_object_or_404(Position, id=position_id)
             position.delete()
 
-        # --- Tariff ---
         elif "add_tariff" in request.POST:
             name = request.POST.get("new_tariff_name")
             minute_limit = request.POST.get("new_tariff_minute_limit")
@@ -670,7 +637,6 @@ def data_view(request):
             tariff = get_object_or_404(Tariff, id=tariff_id)
             tariff.delete()
 
-        # --- Operator ---
         elif "add_operator" in request.POST:
             name = request.POST.get("new_operator_name")
             if name:
@@ -705,20 +671,17 @@ def data_view(request):
 @login_required_custom
 def numbers_view(request):
     if request.method == "POST":
-        # --- Проверка уникальности номера при добавлении ---
         if "check_unique" in request.POST:
             phone_number = request.POST.get("new_phone_number")
             exists = PhoneNumber.objects.filter(number=phone_number).exists()
             return JsonResponse({'exists': exists})
 
-        # --- Добавление нового номера телефона ---
         elif "add_phone" in request.POST:
             phone_number = request.POST.get("new_phone_number")
             account_number = request.POST.get("new_phone_account_number")
             tariff_id = request.POST.get("new_phone_tariff")
             company_id = request.POST.get("new_phone_company")
 
-            # Валидация полей
             if not all([phone_number, account_number, tariff_id]):
                 return JsonResponse({'error': 'Все поля должны быть заполнены'})
 
@@ -747,7 +710,6 @@ def numbers_view(request):
             except Exception as e:
                 return JsonResponse({'error': f'Ошибка: {str(e)}'})
 
-        # --- Обновление существующего номера ---
         elif "update_phone" in request.POST:
             phone_id = request.POST.get("update_phone")
             phone = get_object_or_404(PhoneNumber, id=phone_id)
@@ -764,7 +726,6 @@ def numbers_view(request):
                 phone.tariff = get_object_or_404(Tariff, id=new_tariff_id)
                 phone.save()
 
-                # Обновление компании
                 CompanyPhoneNumber.objects.filter(phone_number=phone).delete()
                 if new_company_id:
                     company = get_object_or_404(Company, id=new_company_id)
@@ -775,14 +736,12 @@ def numbers_view(request):
             except Exception as e:
                 return JsonResponse({'error': f'Ошибка: {str(e)}'})
 
-        # --- Удаление номера телефона ---
         elif "delete_phone" in request.POST:
             phone_id = request.POST.get("delete_phone")
             phone = get_object_or_404(PhoneNumber, id=phone_id)
             phone.delete()
             return JsonResponse({'success': True})
 
-    # Отображение страницы
     phone_numbers = PhoneNumber.objects.filter(status='свободен').select_related(
         'tariff__operator', 'company_number__company'
     )
@@ -824,38 +783,35 @@ def issue_phone_view(request):
         comment = request.POST.get("comment", "")
 
         try:
-            phone = get_object_or_404(
-                PhoneNumber, id=phone_id, status='свободен')
+            phone = get_object_or_404(PhoneNumber, id=phone_id, status='свободен')
             employee = get_object_or_404(Employee, id=employee_id, status=True)
 
-            company_number = CompanyPhoneNumber.objects.filter(
-                phone_number=phone).first()
+            company_number = CompanyPhoneNumber.objects.filter(phone_number=phone).first()
             if company_number and employee.company != company_number.company:
                 return JsonResponse({"success": False, "error": "Сотрудник не принадлежит компании номера"}, status=400)
 
-            existing_record = EmployeePhoneNumber.objects.filter(
-                phone_number=phone).first()
+            existing_record = EmployeePhoneNumber.objects.filter(phone_number=phone).first()
             if existing_record:
                 return JsonResponse({"success": False, "error": "Этот номер уже выдан другому сотруднику"}, status=400)
 
             phone.status = "занят"
             phone.save()
 
-            EmployeePhoneNumber.objects.create(
-                phone_number=phone, employee=employee)
+            EmployeePhoneNumber.objects.create(phone_number=phone, employee=employee)
 
             PhoneNumberHistory.objects.create(
                 phone_number=phone,
                 employee=employee,
                 start_date=timezone.now().date(),
-                comment=comment,
+                comment=comment or "Номер выдан сотруднику",
             )
+            logger.info(f"Номер {phone.number} выдан сотруднику {employee.id} с комментарием: {comment}")
 
             return JsonResponse({"success": True})
 
         except Exception as e:
-            logger.error(f"Ошибка при выдаче номера: {str(e)}")
-            return JsonResponse({"success": False, "error": "Ошибка сервера"}, status=500)
+            logger.error(f"Ошибка при выдаче номера {phone_id}: {str(e)}")
+            return JsonResponse({"success": False, "error": f"Ошибка сервера: {str(e)}"}, status=500)
 
     return JsonResponse({"success": False, "error": "Неверный запрос"}, status=400)
 
@@ -864,25 +820,37 @@ def issue_phone_view(request):
 def return_phone_view(request):
     if request.method == "POST":
         phone_id = request.POST.get("phone_id")
-        comment = request.POST.get("comment", "")
+        comment = request.POST.get("comment", "Номер возвращён в пул")
 
-        phone = get_object_or_404(PhoneNumber, id=phone_id, status="занят")
-        employee_phone = get_object_or_404(
-            EmployeePhoneNumber, phone_number=phone)
+        try:
+            phone = get_object_or_404(PhoneNumber, id=phone_id, status="занят")
+            employee_phone = get_object_or_404(EmployeePhoneNumber, phone_number=phone)
 
-        phone.status = "свободен"
-        phone.save()
+            # Обновляем статус номера
+            phone.status = "свободен"
+            phone.save()
 
-        history_entry = PhoneNumberHistory.objects.filter(
-            phone_number=phone, end_date__isnull=True).last()
-        if history_entry:
-            history_entry.end_date = timezone.now().date()
-            history_entry.comment = comment
-            history_entry.save()
+            # Находим последнюю незакрытую запись в истории
+            history_entry = PhoneNumberHistory.objects.filter(
+                phone_number=phone, end_date__isnull=True
+            ).last()
+            if history_entry:
+                history_entry.end_date = timezone.now().date()
+                history_entry.comment = comment
+                history_entry.save()
+                logger.info(f"История номера {phone.number} обновлена: end_date={history_entry.end_date}, comment={comment}")
+            else:
+                logger.warning(f"Не найдена незакрытая запись в истории для номера {phone.number}")
 
-        employee_phone.delete()
+            # Удаляем связь с сотрудником
+            employee_phone.delete()
+            logger.info(f"Номер {phone.number} возвращён в пул, связь с сотрудником удалена")
 
-        return JsonResponse({"success": True})
+            return JsonResponse({"success": True})
+
+        except Exception as e:
+            logger.error(f"Ошибка при возврате номера {phone_id}: {str(e)}")
+            return JsonResponse({"success": False, "error": f"Ошибка сервера: {str(e)}"}, status=500)
 
     return JsonResponse({"success": False, "error": "Неверный запрос"}, status=400)
 
@@ -892,30 +860,39 @@ def transfer_phone_view(request):
     if request.method == "POST":
         try:
             phone_id = request.POST.get("phone_id")
+            comment = request.POST.get("comment", "Номер отдан сотруднику")
 
             if not phone_id:
                 return JsonResponse({"success": False, "error": "Отсутствует phone_id"}, status=400)
 
             phone = get_object_or_404(PhoneNumber, id=phone_id, status="занят")
-            employee_phone = get_object_or_404(
-                EmployeePhoneNumber, phone_number=phone)
+            employee_phone = get_object_or_404(EmployeePhoneNumber, phone_number=phone)
 
+            # Обновляем статус номера
             phone.status = "отдан"
             phone.save()
 
+            # Находим последнюю незакрытую запись в истории
             history_entry = PhoneNumberHistory.objects.filter(
-                phone_number=phone, end_date__isnull=True).last()
+                phone_number=phone, end_date__isnull=True
+            ).last()
             if history_entry:
-                history_entry.end_date = now().date()
-                history_entry.comment = "Номер отдан сотруднику"
+                history_entry.end_date = timezone.now().date()
+                history_entry.comment = comment
                 history_entry.save()
+                logger.info(f"История номера {phone.number} обновлена: end_date={history_entry.end_date}, comment={comment}")
+            else:
+                logger.warning(f"Не найдена незакрытая запись в истории для номера {phone.number}")
 
+            # Удаляем связь с сотрудником
             employee_phone.delete()
+            logger.info(f"Номер {phone.number} отдан, связь с сотрудником удалена")
 
             return JsonResponse({"success": True})
 
         except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)}, status=500)
+            logger.error(f"Ошибка при передаче номера {phone_id}: {str(e)}")
+            return JsonResponse({"success": False, "error": f"Ошибка сервера: {str(e)}"}, status=500)
 
     return JsonResponse({"success": False, "error": "Неверный запрос"}, status=400)
 
@@ -1028,18 +1005,15 @@ def expenses_import(request):
         return JsonResponse({'success': False, 'message': 'Неверный метод запроса'})
 
     try:
-        # Получение данных из формы
         usage_period = request.POST.get('usage_period')
         csv_file = request.FILES.get('csv_file')
 
-        # Проверка наличия обязательных данных
         if not usage_period or not csv_file:
             return JsonResponse({
                 'success': False,
                 'message': 'Необходимо выбрать период и загрузить файл'
             })
 
-        # Преобразование периода в дату
         try:
             year, month = map(int, usage_period.split('-'))
             usage_date = datetime.date(year, month, 1)
@@ -1049,23 +1023,19 @@ def expenses_import(request):
                 'message': 'Неверный формат периода (ожидается YYYY-MM)'
             })
 
-        # Открытие файла с предполагаемой кодировкой
         csv_file.seek(0)
         csv_file = TextIOWrapper(
             csv_file.file, encoding='utf-8', errors='ignore')
         reader = csv.reader(csv_file)
 
-        # Пропускаем первую строку (заголовки)
         next(reader)
 
         created_count = 0
-        duplicate_errors = []  # Ошибки, связанные с дубликатами
-        format_errors = []    # Ошибки, связанные с форматом данных
+        duplicate_errors = []
+        format_errors = []
 
-        # Чтение данных
         for row in reader:
             try:
-                # Проверка количества столбцов
                 if len(row) < 3:
                     format_errors.append(
                         f"Недостаточно данных: строка {reader.line_num}")
@@ -1075,7 +1045,6 @@ def expenses_import(request):
                 phone_number_str = row[1].strip()
                 amount_str = row[2].strip()
 
-                # Преобразование лицевого счета в число
                 try:
                     account_number = int(account_number_str)
                 except ValueError:
@@ -1083,7 +1052,6 @@ def expenses_import(request):
                         f"Неверный формат лицевого счета: {account_number_str} в строке {reader.line_num}")
                     continue
 
-                # Преобразование номера телефона в число
                 try:
                     phone_number = int(phone_number_str)
                 except ValueError:
@@ -1091,7 +1059,6 @@ def expenses_import(request):
                         f"Неверный формат номера телефона: {phone_number_str} в строке {reader.line_num}")
                     continue
 
-                # Преобразование суммы в число (заменяем запятую на точку)
                 amount_str = amount_str.replace(',', '.').strip()
                 try:
                     amount = round(float(amount_str), 2)
@@ -1100,7 +1067,6 @@ def expenses_import(request):
                         f"Неверный формат суммы: {amount_str} в строке {reader.line_num}")
                     continue
 
-                # Поиск номера телефона в базе
                 phone = PhoneNumber.objects.filter(number=str(
                     phone_number), account_number=str(account_number)).first()
 
@@ -1109,25 +1075,20 @@ def expenses_import(request):
                         f"Не найден номер {phone_number} с лицевым счетом {account_number} в строке {reader.line_num}")
                     continue
 
-                # Проверка на дубликаты
                 if Expense.objects.filter(phone_number=phone, usage_period=usage_date).exists():
                     duplicate_errors.append(
                         f"Расходы для {phone_number} за {usage_period} уже существуют в строке {reader.line_num}")
                     continue
 
-                # Поиск сотрудника, связанного с номером телефона
                 employee_phone = EmployeePhoneNumber.objects.filter(
                     phone_number=phone).first()
                 limit = 0
                 if employee_phone and employee_phone.employee:
-                    # Получаем лимит из позиции сотрудника
                     limit = float(
                         employee_phone.employee.position.salary_limit)
 
-                # Определяем статус: превышен или не превышен
                 status = "превышен" if amount > limit else "не превышен"
 
-                # Создание записи о расходах
                 expense = Expense(
                     phone_number=phone,
                     minute_usage=0,
@@ -1144,15 +1105,12 @@ def expenses_import(request):
                     f"Ошибка в строке {reader.line_num}: {str(e)}")
                 logger.error(f"Ошибка на строке {reader.line_num}: {str(e)}")
 
-        # Формирование сообщения
         message = f"Успешно импортировано {created_count} записей."
 
-        # Если есть успешно импортированные записи, показываем только ошибки дубликатов
         if created_count > 0:
             if duplicate_errors:
                 message += "\nОшибки:\n" + "\n".join(duplicate_errors)
         else:
-            # Если ничего не импортировано, показываем все ошибки
             all_errors = duplicate_errors + format_errors
             if all_errors:
                 message += "\nОшибки:\n" + "\n".join(all_errors)
@@ -1175,7 +1133,6 @@ def users_view(request):
     if request.method == "POST":
         logger.info("Получен POST-запрос: %s", request.POST)
 
-        # Проверка уникальности логина пользователя для AJAX-запроса
         if 'check_unique' in request.POST:
             login = request.POST.get('new_user_login')
             login_hash = hashlib.sha256(login.encode('utf-8')).hexdigest()
@@ -1183,14 +1140,12 @@ def users_view(request):
             logger.info("Проверка уникальности пользователя: %s", exists)
             return JsonResponse({'exists': exists})
 
-        # Проверка уникальности названия роли для AJAX-запроса
         elif 'check_unique_role' in request.POST:
             name = request.POST.get('new_role_name')
             exists = Role.objects.filter(name=name).exists()
             logger.info("Проверка уникальности роли: %s", exists)
             return JsonResponse({'exists': exists})
 
-        # Добавление нового пользователя
         elif 'add_user' in request.POST:
             login = request.POST.get("new_user_login")
             password = request.POST.get("new_user_password")
@@ -1203,7 +1158,6 @@ def users_view(request):
                 try:
                     login_hash = hashlib.sha256(
                         login.encode('utf-8')).hexdigest()
-                    # Проверка уникальности логина
                     if User.objects.filter(login_hash=login_hash).exists():
                         logger.warning("Логин %s уже используется", login)
                         return JsonResponse({'error': 'Пользователь с таким логином уже существует'})
@@ -1216,14 +1170,12 @@ def users_view(request):
                         role=role,
                     )
 
-                    # Связываем пользователя с сотрудником, если сотрудник выбран
                     if employee_id:
                         employee = get_object_or_404(Employee, id=employee_id)
-                        # Проверяем, не привязан ли сотрудник к другому пользователю
                         if employee.user and employee.user != user:
                             logger.warning(
                                 "Сотрудник %s уже привязан к другому пользователю", employee_id)
-                            user.delete()  # Удаляем созданного пользователя
+                            user.delete()
                             return JsonResponse({'error': 'Этот сотрудник уже привязан к другому пользователю'})
                         employee.user = user
                         employee.save()
@@ -1238,7 +1190,6 @@ def users_view(request):
             else:
                 return JsonResponse({'error': 'Все поля должны быть заполнены'})
 
-        # Добавление новой роли
         elif 'add_role' in request.POST:
             name = request.POST.get("new_role_name")
 
@@ -1246,7 +1197,6 @@ def users_view(request):
 
             if name:
                 try:
-                    # Проверка уникальности названия роли
                     if Role.objects.filter(name=name).exists():
                         logger.warning("Роль %s уже существует", name)
                         return JsonResponse({'error': 'Роль с таким названием уже существует'})
@@ -1260,7 +1210,6 @@ def users_view(request):
             else:
                 return JsonResponse({'error': 'Поле названия должно быть заполнено'})
 
-        # Обновление существующего пользователя
         elif "update_user" in request.POST:
             user_id = request.POST.get("update_user")
             user = get_object_or_404(User, id=user_id)
@@ -1272,27 +1221,22 @@ def users_view(request):
             new_login_hash = hashlib.sha256(
                 new_login.encode('utf-8')).hexdigest()
 
-            # Проверка уникальности логина (исключая текущего пользователя)
             if User.objects.filter(login_hash=new_login_hash).exclude(id=user_id).exists():
                 logger.warning(
                     "Логин %s уже используется другим пользователем", new_login)
                 return JsonResponse({'error': 'Пользователь с таким логином уже существует'})
 
-            # Обновление данных пользователя
             try:
                 user.login_hash = new_login_hash
-                if new_password:  # Обновляем пароль только если он указан
+                if new_password:
                     user.password_hash = hashlib.sha256(
                         new_password.encode('utf-8')).hexdigest()
                 user.role = get_object_or_404(Role, id=role_id)
                 user.save()
 
-                # Обновляем связь с сотрудником
-                # Сначала очищаем старую связь
                 Employee.objects.filter(user=user).update(user=None)
                 if employee_id:
                     employee = get_object_or_404(Employee, id=employee_id)
-                    # Проверяем, не привязан ли сотрудник к другому пользователю
                     if employee.user and employee.user != user:
                         logger.warning(
                             "Сотрудник %s уже привязан к другому пользователю", employee_id)
@@ -1306,18 +1250,15 @@ def users_view(request):
                 logger.error("Ошибка при обновлении пользователя: %s", str(e))
                 return JsonResponse({'error': f'Ошибка: {str(e)}'})
 
-        # Обновление существующей роли
         elif "update_role" in request.POST:
             role_id = request.POST.get("update_role")
             role = get_object_or_404(Role, id=role_id)
             new_name = request.POST.get("role_name")
 
-            # Проверка уникальности названия (исключая текущую роль)
             if Role.objects.filter(name=new_name).exclude(id=role_id).exists():
                 logger.warning("Роль %s уже существует", new_name)
                 return JsonResponse({'error': 'Роль с таким названием уже существует'})
 
-            # Обновление данных роли
             try:
                 role.name = new_name
                 role.save()
@@ -1327,13 +1268,11 @@ def users_view(request):
                 logger.error("Ошибка при обновлении роли: %s", str(e))
                 return JsonResponse({'error': f'Ошибка: {str(e)}'})
 
-        # Удаление пользователя
         elif "delete_user" in request.POST:
             user_id = request.POST.get("delete_user")
             user = get_object_or_404(User, id=user_id)
             logger.info("Попытка удаления пользователя ID: %s", user_id)
             try:
-                # Очищаем связь с сотрудником перед удалением
                 Employee.objects.filter(user=user).update(user=None)
                 user.delete()
                 logger.info("Пользователь удалён: %s", user_id)
@@ -1342,13 +1281,11 @@ def users_view(request):
                 logger.error("Ошибка при удалении пользователя: %s", str(e))
                 return JsonResponse({'error': f'Ошибка: {str(e)}'})
 
-        # Удаление роли
         elif "delete_role" in request.POST:
             role_id = request.POST.get("delete_role")
             role = get_object_or_404(Role, id=role_id)
             logger.info("Попытка удаления роли ID: %s", role_id)
             try:
-                # Проверка, не используется ли роль
                 if User.objects.filter(role=role).exists():
                     logger.warning(
                         "Роль %s используется пользователями и не может быть удалена", role.name)
@@ -1360,12 +1297,9 @@ def users_view(request):
                 logger.error("Ошибка при удалении роли: %s", str(e))
                 return JsonResponse({'error': f'Ошибка: {str(e)}'})
 
-    # Получение данных для отображения
     users = User.objects.select_related('role').prefetch_related(
-        # Используем prefetch_related для обратной связи
         'employee__company').all()
     roles = Role.objects.all()
-    # Только сотрудники со статусом TRUE
     employees = Employee.objects.filter(status=True)
 
     return render(request, "users.html", {

@@ -1,9 +1,7 @@
-/* Основные стили */
 body {
     margin: 0;
     padding: 0;
     background-color: #f7f7f7;
-    /* Светлый серый фон */
     padding-top: 80px;
     font-family: cursive;
 }
@@ -19,7 +17,6 @@ h2 {
     color: #23889f;
 }
 
-/* Контейнер для бокового расположения */
 .content-wrapper {
     display: flex;
     justify-content: center;
@@ -29,7 +26,6 @@ h2 {
     padding: 0 20px;
 }
 
-/* Левый блок */
 .sidebar {
     width: 300px;
     background-color: #fff;
@@ -39,7 +35,6 @@ h2 {
     border: 1px solid #ddd;
 }
 
-/* Основной контент */
 main {
     flex: 1;
     max-width: 800px;
@@ -92,7 +87,6 @@ button:hover {
     background-color: #1b6b7d;
 }
 
-/* Стили для вкладок */
 .tab-menu {
     list-style: none;
     padding: 0;
@@ -133,18 +127,15 @@ button:hover {
     display: block;
 }
 
-/* Таблицы */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 30px;
 }
 
-/* Стили для сетки карточек номеров */
 .phone-number-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    /* Уменьшаем количество колонок для увеличения карточек */
     gap: 15px;
     padding: 10px;
 }
@@ -162,7 +153,6 @@ table {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     min-height: 100px;
-    /* Фиксированная минимальная высота */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -187,7 +177,6 @@ table {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    /* Ограничение на 2 строки */
     -webkit-box-orient: vertical;
 }
 
@@ -195,7 +184,6 @@ table {
     color: #23889f;
 }
 
-/* Стили для модального окна */
 .modal {
     display: none;
     position: fixed;
@@ -291,7 +279,6 @@ table {
     margin: 10px 0;
 }
 
-/* Стили для фильтра */
 .filter-container {
     display: flex;
     flex-direction: column;
@@ -304,7 +291,6 @@ table {
     color: #23889f;
 }
 
-/* Стили для поиска по номерам */
 .phone-filter {
     position: relative;
     width: 100%;
@@ -334,11 +320,9 @@ table {
     font-family: cursive;
 }
 
-/* Стили для кастомного выпадающего списка */
 .company-filter {
     position: relative;
     width: 100%;
-    /* Полная ширина внутри .sidebar */
 }
 
 .company-filter input#companyFilter {
@@ -393,21 +377,17 @@ table {
 
 .company-drop li:hover {
     background-color: #8cd6f4;
-    /* Светло-голубой для hover */
 }
 
 .company-drop li:first-child {
     border-top: none;
 }
 
-/* Ограничение высоты и прокрутка */
 .company-drop {
     max-height: 200px;
-    /* 40px * 5 элементов */
     overflow-y: auto;
 }
 
-/* Стилизация скроллбара */
 .company-drop::-webkit-scrollbar {
     width: 8px;
 }
@@ -426,7 +406,6 @@ table {
     background: #1b6b7d;
 }
 
-/* Стили для компании в карточках */
 .phone-number-card .company {
     margin: 5px 0;
     font-size: 14px;
@@ -435,7 +414,6 @@ table {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 1;
-    /* Ограничение на 1 строку */
     -webkit-box-orient: vertical;
 }
 
@@ -443,12 +421,10 @@ table {
     color: #23889f;
 }
 
-/* Стили для модального окна */
 .modal-content p strong {
     color: #23889f;
 }
 
-/* Стили для кнопок "Показать больше" */
 #loadMorePhones,
 #loadMoreEmployees {
     background-color: #23889f;
@@ -471,7 +447,6 @@ table {
 }
 
 
-/* Адаптивность */
 @media (max-width: 1024px) {
     .content-wrapper {
         flex-direction: column;

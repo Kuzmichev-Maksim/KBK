@@ -9,7 +9,6 @@ $(document).ready(function () {
   };
   $('#company-table, #department-table, #position-table, #tariff-table, #operator-table').DataTable(options);
 
-  // Переключение вкладок
   $('.tab-menu li')
     .not('.add-tab')
     .click(function () {
@@ -33,7 +32,6 @@ $(document).ready(function () {
       .show();
   }
 
-  // Открытие модального окна для добавления
   $('#openAddModal').click(function () {
     $('#addChoiceList').show();
     $('#addTypeSelect').hide().val('');
@@ -67,7 +65,6 @@ $(document).ready(function () {
     else if (choice === 'operator') $('#addOperatorForm').show();
   }
 
-  // Обновление компании
   $('.update-company-btn').click(function () {
     var companyId = $(this).data('id');
     var companyName = $(this).data('name');
@@ -84,7 +81,6 @@ $(document).ready(function () {
     $('#updateCompanyModal').fadeOut();
   });
 
-  // Обновление отдела
   $('.update-department-btn').click(function () {
     var deptId = $(this).data('id');
     var deptName = $(this).data('name');
@@ -97,7 +93,6 @@ $(document).ready(function () {
     $('#updateDepartmentModal').fadeOut();
   });
 
-  // Обновление должности
   $('.update-position-btn').click(function () {
     var posId = $(this).data('id');
     var posName = $(this).data('name');
@@ -112,7 +107,6 @@ $(document).ready(function () {
     $('#updatePositionModal').fadeOut();
   });
 
-  // Обновление тарифа
   $('.update-tariff-btn').click(function () {
     var tariffId = $(this).data('id');
     var tariffName = $(this).data('name');
@@ -135,7 +129,6 @@ $(document).ready(function () {
     $('#updateTariffModal').fadeOut();
   });
 
-  // Обновление оператора
   $('.update-operator-btn').click(function () {
     var operatorId = $(this).data('id');
     var operatorName = $(this).data('name');
@@ -148,7 +141,6 @@ $(document).ready(function () {
     $('#updateOperatorModal').fadeOut();
   });
 
-  // Подтверждение удаления
   $('.delete-company-btn, .delete-department-btn, .delete-position-btn, .delete-tariff-btn, .delete-operator-btn').click(function () {
     var id = $(this).data('id');
     var name = $(this).data('name');

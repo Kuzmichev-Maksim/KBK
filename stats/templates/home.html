@@ -32,7 +32,6 @@
           <div class="server-error">{{ error }}</div>
         {% endif %}
 
-        <!-- Фильтры -->
         <div class="filter-container">
           <div class="custom-filter-container">
             <label for="filterCompany">Компания:</label>
@@ -105,7 +104,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для обновления сотрудника -->
     <div class="modal-overlay" id="updateEmployeeModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseEmployee">×</span>
@@ -197,7 +195,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для добавления сотрудника -->
     <div class="modal-overlay" id="addModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseAdd">×</span>
@@ -223,7 +220,7 @@
               <span class="error-message" id="errorNewMiddleName">Отчество должно содержать только русские буквы или быть пустым</span>
             </div>
             <div class="form-group half-width">
-              <label for="newEmployeePersonnelNumber">Лицевой номер:</label>
+              <label for="newEmployeePersonnelNumber">Таб. номер:</label>
               <input class="input-field" type="text" name="new_employee_personnel_number" id="newEmployeePersonnelNumber" placeholder="Лицевой номер" required />
               <span class="error-message" id="errorNewPersonnelNumber">Табельный номер должен содержать только цифры</span>
             </div>
@@ -288,7 +285,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для подтверждения удаления -->
     <div class="modal-overlay" id="deleteConfirmModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseDelete">×</span>
@@ -317,27 +313,25 @@
         };
         var table = $('#employee-table').DataTable(options);
     
-        // Списки для фильтров и форм
         const companies = [
-          '', // Для "Все компании"
+          '',
           {% for company in companies %}
             '{{ company.name }}',
           {% endfor %}
         ];
         const positions = [
-          '', // Для "Все должности"
+          '',
           {% for position in positions %}
             '{{ position.name }}',
           {% endfor %}
         ];
         const departments = [
-          '', // Для "Все отделы"
+          '',
           {% for department in departments %}
             '{{ department.name }}',
           {% endfor %}
         ];
     
-        // Объекты для соответствия имени и ID
         const companyMap = {
           {% for company in companies %}
             '{{ company.name }}': '{{ company.id }}',
@@ -354,14 +348,12 @@
           {% endfor %}
         };
     
-        // Проверяем, есть ли данные в таблице
         if ($('#employee-table tbody tr').length === 0) {
           console.log('Таблица пуста: данные не загружены или отсутствуют.');
         } else {
           console.log('Данные в таблице присутствуют, строк: ' + $('#employee-table tbody tr').length);
         }
     
-        // Функция для отображения списка элементов в выпадающем меню
         function showCustomList(inputElement, dropElement, items, filterType, selectElement) {
           const filterValue = inputElement.val().toLowerCase();
           const filteredItems = filterValue
@@ -383,7 +375,6 @@
                 } else if (filterType.includes('Department')) {
                   selectElement.val(departmentMap[item] || '');
                 }
-                // После выбора значения из списка вызываем валидацию поля
                 validateCustomSelect(inputElement, inputElement.closest('.custom-filter-container').find('.error-message'));
               } else {
                 applyFilters();
@@ -394,7 +385,6 @@
           dropElement.css('height', filteredItems.length > 0 ? 'auto' : '0');
         }
     
-        // Применение фильтров к таблице
         function applyFilters() {
           const companyFilter = $('#filterCompany').val().trim();
           const positionFilter = $('#filterPosition').val().trim();
@@ -413,10 +403,8 @@
           table.draw();
         }
     
-        // Инициализация фильтров при загрузке страницы
         applyFilters();
     
-        // Обработчики для фильтров
         $('.filter-container .custom-filter input').each(function () {
           const input = $(this);
           const drop = input.siblings('.custom-drop');
@@ -441,7 +429,6 @@
           });
         });
     
-        // Обработчики для кастомных выпадающих списков в формах
         $('.modal-content .custom-filter input').each(function () {
           const input = $(this);
           const drop = input.siblings('.custom-drop');
@@ -462,14 +449,12 @@
             showCustomList(input, drop, items, filterType, selectElement);
           });
     
-          // Добавляем обработчик изменения для моментальной валидации
           input.on('change blur', function () {
             const errorElement = input.closest('.custom-filter-container').find('.error-message');
             validateCustomSelect(input, errorElement);
           });
         });
     
-        // Закрытие выпадающего списка при клике вне
         $(document).click(function (e) {
           $('.custom-filter input').each(function () {
             const input = $(this);
@@ -481,7 +466,6 @@
           });
         });
     
-        // Валидация текстовых полей
         function validateTextField(field, regex, errorElement, allowEmpty = false) {
           const value = field.val().trim();
           const isValid = (allowEmpty && value === '') || (regex.test(value) && value.length > 0);
@@ -495,14 +479,12 @@
           return isValid;
         }
     
-        // Валидация кастомных выпадающих списков
         function validateCustomSelect(inputField, errorElement) {
           const value = inputField.val().trim();
           const placeholder = inputField.attr('placeholder').toLowerCase();
           const filterType = inputField.siblings('.custom-drop').data('filter');
           const items = filterType.includes('Company') ? companies.slice(1) : filterType.includes('Position') ? positions.slice(1) : departments.slice(1);
     
-          // Проверяем, что значение не пустое, не равно плейсхолдеру и присутствует в списке
           const isValid = value !== '' && 
                          value.toLowerCase() !== placeholder && 
                          items.some(item => item.toLowerCase() === value.toLowerCase());
@@ -517,7 +499,6 @@
           return isValid;
         }
     
-        // Валидация всей формы
         function validateForm(formId) {
           const form = $(formId);
           const isUpdateForm = formId === '#modalUpdateEmployeeForm';
@@ -554,7 +535,6 @@
           return isLastNameValid && isFirstNameValid && isMiddleNameValid && isPersonnelNumberValid && isCityValid && isCompanyValid && isPositionValid && isDepartmentValid;
         }
     
-        // Валидация и отправка формы добавления
         $('#addEmployeeForm').on('submit', function (e) {
           e.preventDefault();
           $('#errorDuplicate').hide();
@@ -606,7 +586,6 @@
           });
         });
     
-        // Валидация и отправка формы обновления
         $('#modalUpdateEmployeeForm').on('submit', function (e) {
           e.preventDefault();
           $('#errorUpdate').hide();
@@ -638,7 +617,6 @@
           });
         });
     
-        // Валидация и отправка формы удаления
         $('#deleteEmployeeForm').on('submit', function (e) {
           e.preventDefault();
     
@@ -665,7 +643,6 @@
           });
         });
     
-        // Переключение вкладок
         $('.tab-menu li')
           .not('.add-tab')
           .click(function () {
@@ -678,7 +655,6 @@
               .show();
           });
     
-        // Открытие модального окна для добавления
         $('#openAddModal').click(function () {
           $('#addModal').fadeIn();
           $('#errorDuplicate').hide();
@@ -691,7 +667,6 @@
           $('#newEmployeeDepartmentDisplay').val('');
         });
     
-        // Закрытие модального окна для добавления
         $('#modalCloseAdd').click(function () {
           $('#addModal').fadeOut();
         });
@@ -701,7 +676,6 @@
           }
         });
     
-        // Открытие модального окна для обновления сотрудника
         $('.update-employee-btn').click(function () {
           var employeeId = $(this).data('id');
           var lastName = $(this).data('last-name');
@@ -735,7 +709,6 @@
           $('#errorUpdate').hide();
         });
     
-        // Закрытие модального окна для обновления
         $('#modalCloseEmployee').click(function () {
           $('#updateEmployeeModal').fadeOut();
         });
@@ -745,7 +718,6 @@
           }
         });
     
-        // Открытие модального окна для подтверждения удаления
         $('.delete-employee-btn').click(function () {
           var employeeId = $(this).data('id');
           var fullName = $(this).data('full-name').trim();
@@ -754,7 +726,6 @@
           $('#deleteConfirmModal').fadeIn();
         });
     
-        // Закрытие модального окна подтверждения удаления
         $('#modalCloseDelete, #cancelDelete').click(function () {
           $('#deleteConfirmModal').fadeOut();
         });

@@ -19,7 +19,6 @@ $(document).ready(function () {
 
   var expensesTable = $('#expenses-table').DataTable(options);
 
-  // Устанавливаем текущий месяц по умолчанию для фильтра
   let startDateInput = document.getElementById("start_date");
   if (startDateInput) {
     let today = new Date();
@@ -29,7 +28,6 @@ $(document).ready(function () {
     $('#download-pdf').prop('disabled', false);
   }
 
-  // Устанавливаем текущий месяц по умолчанию для импорта
   let usagePeriodInput = document.getElementById("usage_period");
   if (usagePeriodInput) {
     let today = new Date();
@@ -38,27 +36,22 @@ $(document).ready(function () {
     usagePeriodInput.value = `${year}-${month}`;
   }
 
-  // Управление состоянием кнопки "Скачать PDF"
   $('#start_date').on('change', function () {
     const startDate = $(this).val();
     $('#download-pdf').prop('disabled', !startDate);
   });
 
-  // Загружаем расходы сразу после установки даты
   loadExpenses(true);
 
-  // Фильтрация при отправке формы
   $('#filter-form').on('submit', function (e) {
     e.preventDefault();
     loadExpenses(true);
   });
 
-  // Обновление при изменении лицевого счета или сотрудника
   $('#account, #employee').on('change', function () {
     loadExpenses(false);
   });
 
-  // Переключение вкладок
   $('.tab-menu li').click(function () {
     $('.tab-menu li').removeClass('active');
     $(this).addClass('active');
@@ -67,7 +60,6 @@ $(document).ready(function () {
     $('#' + $(this).data('tab')).addClass('active');
   });
 
-  // Обработка импорта CSV
   $('#import-form').on('submit', function (e) {
     e.preventDefault();
     let formData = new FormData(this);
@@ -92,7 +84,6 @@ $(document).ready(function () {
     });
   });
 
-  // Функция для преобразования даты в формат "Март 2025"
   function formatDateToMonthYear(dateString) {
     if (!dateString) return "Не выбран";
 
@@ -108,7 +99,6 @@ $(document).ready(function () {
     return `${month} ${year}`;
   }
 
-  // Скачивание PDF
   $('#download-pdf').click(function () {
     if ($(this).prop('disabled')) return;
     const { jsPDF } = window.jspdf;

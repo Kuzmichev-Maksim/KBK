@@ -11,8 +11,8 @@ class Role(models.Model):
 
 class User(models.Model):
     login_hash = models.CharField(
-        max_length=64, unique=True)  # Хеш логина (SHA-256)
-    password_hash = models.CharField(max_length=64)  # Хеш пароля (SHA-256)
+        max_length=64, unique=True)
+    password_hash = models.CharField(max_length=64)
     role = models.ForeignKey(
         Role, on_delete=models.CASCADE, related_name='users')
 

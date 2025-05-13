@@ -27,14 +27,12 @@
         <li class="add-tab" id="openAddModal">Добавить</li>
       </ul>
 
-      <!-- Вкладка Пользователи -->
       <div id="users-tab" class="tab-content active">
         <h2>Пользователи</h2>
         {% if error %}
           <div class="server-error">{{ error }}</div>
         {% endif %}
 
-        <!-- Фильтры -->
         <div class="filter-container">
           <div class="custom-filter-container">
             <label for="filterRole">Роль:</label>
@@ -107,7 +105,6 @@
         </table>
       </div>
 
-      <!-- Вкладка Роли -->
       <div id="roles-tab" class="tab-content">
         <h2>Роли</h2>
         <table id="role-table" border="1">
@@ -136,7 +133,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для добавления пользователя -->
     <div class="modal-overlay" id="addUserModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseAddUser">×</span>
@@ -194,7 +190,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для обновления пользователя -->
     <div class="modal-overlay" id="updateUserModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseUser">×</span>
@@ -253,7 +248,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для добавления роли -->
     <div class="modal-overlay" id="addRoleModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseAddRole">×</span>
@@ -273,7 +267,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для обновления роли -->
     <div class="modal-overlay" id="updateRoleModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseUpdateRole">×</span>
@@ -294,7 +287,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для подтверждения удаления пользователя -->
     <div class="modal-overlay" id="deleteUserModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseDeleteUser">×</span>
@@ -311,7 +303,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для подтверждения удаления роли -->
     <div class="modal-overlay" id="deleteRoleModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseDeleteRole">×</span>
@@ -328,7 +319,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно для выбора типа добавления -->
     <div class="modal-overlay" id="addChoiceModal">
       <div class="modal-content">
         <span class="modal-close" id="modalCloseAddChoice">×</span>
@@ -342,7 +332,6 @@
 
     <script>
       $(document).ready(function () {
-        // Инициализация таблиц
         const userTableOptions = {
           language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/ru.json' },
           paging: true,
@@ -362,22 +351,20 @@
         var userTable = $('#user-table').DataTable(userTableOptions);
         var roleTable = $('#role-table').DataTable(roleTableOptions);
 
-        // Списки для фильтров и форм
         const roles = [
-          '', // Для "Все роли"
+          '',
           {% for role in roles %}
             '{{ role.name }}',
           {% endfor %}
         ];
 
         const employees = [
-          '', // Для "Не выбрано"
+          '',
           {% for employee in employees %}
             '{{ employee.last_name }} {{ employee.first_name }} {{ employee.middle_name|default:"" }} ({{ employee.personnel_number }})',
           {% endfor %}
         ];
 
-        // Объекты для соответствия имени и ID
         const roleMap = {
           {% for role in roles %}
             '{{ role.name }}': '{{ role.id }}',
@@ -390,7 +377,6 @@
           {% endfor %}
         };
 
-        // Проверяем, есть ли данные в таблицах
         if ($('#user-table tbody tr').length === 0) {
           console.log('Таблица пользователей пуста: данные не загружены или отсутствуют.');
         } else {
@@ -402,13 +388,11 @@
           console.log('Данные в таблице ролей присутствуют, строк: ' + $('#role-table tbody tr').length);
         }
 
-        // Проверка наличия ролей
-        if (roles.length <= 1) { // roles[0] — это пустая строка для фильтра "Все роли"
+        if (roles.length <= 1) {
           alert('Необходимо создать хотя бы одну роль перед добавлением пользователя.');
           $('#openAddModal').prop('disabled', true);
         }
 
-        // Функция для отображения списка элементов в выпадающем меню
         function showCustomList(inputElement, dropElement, items, filterType, selectElement) {
           const filterValue = inputElement.val().toLowerCase();
           const filteredItems = filterValue
@@ -425,7 +409,6 @@
               if (selectElement) {
                 if (filterType.includes('Role')) {
                   selectElement.val(roleMap[item] || '');
-                  // Проверка роли для управления обязательностью поля сотрудника
                   const roleName = item;
                   const employeeInput = filterType.includes('newRole') ? $('#newUserEmployeeDisplay') : $('#modalUserEmployeeDisplay');
                   const employeeError = filterType.includes('newRole') ? $('#errorNewEmployee') : $('#errorEmployee');
@@ -445,7 +428,6 @@
           dropElement.css('height', filteredItems.length > 0 ? 'auto' : '0');
         }
 
-        // Применение фильтров к таблице пользователей
         function applyUserFilters() {
           const roleFilter = $('#filterRole').val().trim();
           console.log('Фильтры пользователей:', { role: roleFilter });
@@ -453,10 +435,8 @@
           userTable.draw();
         }
 
-        // Инициализация фильтров при загрузке страницы
         applyUserFilters();
 
-        // Обработчики для фильтров пользователей
         $('.filter-container .custom-filter input').each(function () {
           const input = $(this);
           const drop = input.siblings('.custom-drop');
@@ -481,7 +461,6 @@
           });
         });
 
-        // Обработчики для кастомных выпадающих списков в формах
         $('.modal-content .custom-filter input').each(function () {
           const input = $(this);
           const drop = input.siblings('.custom-drop');
@@ -503,7 +482,6 @@
           });
         });
 
-        // Закрытие выпадающего списка при клике вне
         $(document).click(function (e) {
           $('.custom-filter input').each(function () {
             const input = $(this);
@@ -515,7 +493,6 @@
           });
         });
 
-        // Валидация текстовых полей
         function validateTextField(field, regex, errorElement, allowEmpty = false) {
           const value = field.val().trim();
           const isValid = (allowEmpty && value === '') || (regex.test(value) && value.length > 0);
@@ -529,7 +506,6 @@
           return isValid;
         }
 
-        // Валидация кастомных выпадающих списков
         function validateCustomSelect(inputField, errorElement, allowEmpty = false) {
           const value = inputField.val().trim();
           const placeholder = inputField.attr('placeholder').toLowerCase();
@@ -544,7 +520,6 @@
           return isValid;
         }
 
-        // Валидация формы добавления/обновления пользователя
         function validateUserForm(formId) {
           const form = $(formId);
           const isUpdateForm = formId === '#modalUpdateUserForm';
@@ -565,7 +540,6 @@
           const isPasswordValid = validateTextField(fields.password, /^[a-zA-Z0-9@_-]*$/, errors.password, isUpdateForm);
           const isRoleValid = validateCustomSelect(fields.roleDisplay, errors.role);
 
-          // Проверка сотрудника в зависимости от роли
           const roleName = fields.roleDisplay.val().trim();
           const isEmployeeRequired = roleName !== 'Администратор';
           const isEmployeeValid = validateCustomSelect(fields.employeeDisplay, errors.employee, !isEmployeeRequired);
@@ -573,7 +547,6 @@
           return isLoginValid && isPasswordValid && isRoleValid && (isEmployeeRequired ? isEmployeeValid : true);
         }
 
-        // Валидация формы добавления/обновления роли
         function validateRoleForm(formId) {
           const form = $(formId);
           const isUpdateForm = formId === '#modalUpdateRoleForm';
@@ -589,19 +562,15 @@
           return isNameValid;
         }
 
-        // Функция для обновления таблицы пользователей без перезагрузки страницы
         function refreshUserTable() {
           $.ajax({
             url: '{% url "users" %}',
             type: 'GET',
             success: function (response) {
-              // Парсим HTML ответа и извлекаем обновленную таблицу
               const newTable = $(response).find('#user-table').html();
               $('#user-table').html(newTable);
-              // Переинициализируем DataTable
               userTable.destroy();
               userTable = $('#user-table').DataTable(userTableOptions);
-              // Повторно привязываем обработчики событий для кнопок
               bindUserTableEvents();
             },
             error: function (xhr, status, error) {
@@ -610,7 +579,6 @@
           });
         }
 
-        // Привязка событий для кнопок в таблице
         function bindUserTableEvents() {
           $('.update-user-btn').off('click').click(function () {
             var userId = $(this).data('id');
@@ -643,10 +611,8 @@
           });
         }
 
-        // Изначальная привязка событий
         bindUserTableEvents();
 
-        // Валидация и отправка формы добавления пользователя
         $('#addUserForm').on('submit', function (e) {
           e.preventDefault();
           $('#errorDuplicateUser').hide();
@@ -680,7 +646,7 @@
                   success: function (response) {
                     if (response.success) {
                       $('#addUserModal').fadeOut();
-                      refreshUserTable(); // Обновляем таблицу без перезагрузки
+                      refreshUserTable();
                     } else if (response.error) {
                       $('#errorDuplicateUser').text(response.error).show();
                     }
@@ -699,7 +665,6 @@
           });
         });
 
-        // Валидация и отправка формы обновления пользователя
         $('#modalUpdateUserForm').on('submit', function (e) {
           e.preventDefault();
           $('#errorUpdate').hide();
@@ -721,7 +686,7 @@
             success: function (response) {
               if (response.success) {
                 $('#updateUserModal').fadeOut();
-                refreshUserTable(); // Обновляем таблицу без перезагрузки
+                refreshUserTable();
               } else if (response.error) {
                 $('#errorUpdate').text(response.error).show();
               }
@@ -732,7 +697,6 @@
           });
         });
 
-        // Валидация и отправка формы добавления роли
         $('#addRoleForm').on('submit', function (e) {
           e.preventDefault();
           $('#errorDuplicateRole').hide();
@@ -784,7 +748,6 @@
           });
         });
 
-        // Валидация и отправка формы обновления роли
         $('#modalUpdateRoleForm').on('submit', function (e) {
           e.preventDefault();
           $('#errorUpdateRole').hide();
@@ -816,7 +779,6 @@
           });
         });
 
-        // Валидация и отправка формы удаления пользователя
         $('#deleteUserForm').on('submit', function (e) {
           e.preventDefault();
 
@@ -833,7 +795,7 @@
             success: function (response) {
               if (response.success) {
                 $('#deleteUserModal').fadeOut();
-                refreshUserTable(); // Обновляем таблицу без перезагрузки
+                refreshUserTable();
               } else if (response.error) {
                 $('#deleteUserConfirmText').html('Ошибка при удалении: ' + response.error);
               }
@@ -844,7 +806,6 @@
           });
         });
 
-        // Валидация и отправка формы удаления роли
         $('#deleteRoleForm').on('submit', function (e) {
           e.preventDefault();
 
@@ -871,7 +832,6 @@
           });
         });
 
-        // Переключение вкладок
         $('.tab-menu li')
           .not('.add-tab')
           .click(function () {
@@ -884,12 +844,10 @@
               .show();
           });
 
-        // Открытие модального окна для выбора типа добавления
         $('#openAddModal').click(function () {
           $('#addChoiceModal').fadeIn();
         });
 
-        // Закрытие модального окна для выбора типа добавления
         $('#modalCloseAddChoice').click(function () {
           $('#addChoiceModal').fadeOut();
         });
@@ -899,7 +857,6 @@
           }
         });
 
-        // Выбор типа добавления
         $('#addChoiceList li').click(function () {
           const type = $(this).data('type');
           $('#addChoiceModal').fadeOut();
@@ -922,7 +879,6 @@
           }
         });
 
-        // Закрытие модального окна для добавления пользователя
         $('#modalCloseAddUser').click(function () {
           $('#addUserModal').fadeOut();
         });
@@ -932,7 +888,6 @@
           }
         });
 
-        // Закрытие модального окна для добавления роли
         $('#modalCloseAddRole').click(function () {
           $('#addRoleModal').fadeOut();
         });
@@ -942,7 +897,6 @@
           }
         });
 
-        // Закрытие модального окна для обновления пользователя
         $('#modalCloseUser').click(function () {
           $('#updateUserModal').fadeOut();
         });
@@ -952,7 +906,6 @@
           }
         });
 
-        // Открытие модального окна для обновления роли
         $('.update-role-btn').click(function () {
           var roleId = $(this).data('id');
           var name = $(this).data('name');
@@ -965,7 +918,6 @@
           $('#errorUpdateRole').hide();
         });
 
-        // Закрытие модального окна для обновления роли
         $('#modalCloseUpdateRole').click(function () {
           $('#updateRoleModal').fadeOut();
         });
@@ -975,7 +927,6 @@
           }
         });
 
-        // Закрытие модального окна для подтверждения удаления пользователя
         $('#modalCloseDeleteUser, #cancelDeleteUser').click(function () {
           $('#deleteUserModal').fadeOut();
         });
@@ -985,7 +936,6 @@
           }
         });
 
-        // Открытие модального окна для подтверждения удаления роли
         $('.delete-role-btn').click(function () {
           var roleId = $(this).data('id');
           var name = $(this).data('name');
@@ -994,7 +944,6 @@
           $('#deleteRoleModal').fadeIn();
         });
 
-        // Закрытие модального окна для подтверждения удаления роли
         $('#modalCloseDeleteRole, #cancelDeleteRole').click(function () {
           $('#deleteRoleModal').fadeOut();
         });
