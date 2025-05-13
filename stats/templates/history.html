@@ -44,13 +44,13 @@
               <div class="phone-number-card" onclick="openModal('phone-{{ phone_number|slugify }}')">
                 <p class="phone-number">{{ phone_number }}</p>
                 <p class="company">
-                  <strong>Компания:</strong> {% with last_history=history_items|first %}
+                  <strong>Компания:</strong> {% with last_history=history_items|last %}
                     {{ last_history.company|default:'-' }}
                   {% endwith %}
                 </p>
                 <p class="comment">
                   <strong>Комментарий:</strong>
-                  {% with last_history=history_items|first %}
+                  {% with last_history=history_items|last %}
                     {{ last_history.comment|default:'-' }}
                   {% endwith %}
                 </p>
@@ -60,7 +60,7 @@
                   <span class="close" onclick="closeModal('phone-{{ phone_number|slugify }}')">×</span>
                   <h2>История номера: {{ phone_number }}</h2>
                   <p>
-                    <strong>Компания:</strong> {% with last_history=history_items|first %}
+                    <strong>Компания:</strong> {% with last_history=history_items|last %}
                       {{ last_history.company|default:'-' }}
                     {% endwith %}
                   </p>
@@ -78,30 +78,10 @@
                         <p>
                           <strong>Дата конца:</strong> {{ history.end_date|date:'d.m.Y'|default:'-' }}
                         </p>
-                        {% if history_items|length > 0 %}
-                          {% with active_history=history_items|first %}
-                            {% if active_history.end_date == None and history.id == active_history.id %}
-                              <label for="comment-{{ history.id }}">Комментарий:</label>
-                              <input type="text" id="comment-{{ history.id }}" name="comment_{{ history.id }}" value="{{ history.comment|default:'' }}" />
-                              <button type="submit" name="history_id" value="{{ history.id }}">Сохранить</button>
-                            {% elif active_history.end_date != None %}
-                              {% with last_ended_history=history_items|dictsort:"end_date"|last %}
-                                {% if history.id == last_ended_history.id %}
-                                  <label for="comment-{{ history.id }}">Комментарий:</label>
-                                  <input type="text" id="comment-{{ history.id }}" name="comment_{{ history.id }}" value="{{ history.comment|default:'' }}" />
-                                  <button type="submit" name="history_id" value="{{ history.id }}">Сохранить</button>
-                                {% else %}
-                                  <p>
-                                    <strong>Комментарий:</strong> {{ history.comment|default:'-' }}
-                                  </p>
-                                {% endif %}
-                              {% endwith %}
-                            {% else %}
-                              <p>
-                                <strong>Комментарий:</strong> {{ history.comment|default:'-' }}
-                              </p>
-                            {% endif %}
-                          {% endwith %}
+                        {% if history == history_items|last %}
+                          <label for="comment-{{ history.id }}">Комментарий:</label>
+                          <input type="text" id="comment-{{ history.id }}" name="comment_{{ history.id }}" value="{{ history.comment|default:'' }}" />
+                          <button type="submit" name="history_id" value="{{ history.id }}">Сохранить</button>
                         {% else %}
                           <p>
                             <strong>Комментарий:</strong> {{ history.comment|default:'-' }}
