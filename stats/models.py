@@ -90,16 +90,8 @@ class Operator(models.Model):
 
 
 class Tariff(models.Model):
-    operator = models.ForeignKey(
-        Operator, on_delete=models.CASCADE, related_name='tariffs', null=True, blank=True)
     name = models.CharField(max_length=255)
-    minute_limit = models.PositiveIntegerField()
-    gb_limit = models.PositiveIntegerField()
-    minute_overage_cost = models.DecimalField(max_digits=10, decimal_places=2)
-    gb_overage_cost = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return self.name
+    operator = models.ForeignKey(Operator, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class PhoneNumber(models.Model):
