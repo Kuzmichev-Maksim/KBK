@@ -611,26 +611,16 @@ def data_view(request):
 
         elif "add_tariff" in request.POST:
             name = request.POST.get("new_tariff_name")
-            minute_limit = request.POST.get("new_tariff_minute_limit")
-            gb_limit = request.POST.get("new_tariff_gb_limit")
-            minute_cost = request.POST.get("new_tariff_minute_cost")
-            gb_cost = request.POST.get("new_tariff_gb_cost")
-            if all([name, minute_limit, gb_limit, minute_cost, gb_cost]):
-                Tariff.objects.create(
-                    name=name,
-                    minute_limit=minute_limit,
-                    gb_limit=gb_limit,
-                    minute_overage_cost=minute_cost,
-                    gb_overage_cost=gb_cost
-                )
+            operator_id = request.POST.get("new_tariff_operator")
+            if name:
+                operator = Operator.objects.get(id=operator_id) if operator_id else None
+                Tariff.objects.create(name=name, operator=operator)
         elif "update_tariff" in request.POST:
             tariff_id = request.POST.get("update_tariff")
             tariff = get_object_or_404(Tariff, id=tariff_id)
             tariff.name = request.POST.get("tariff_name")
-            tariff.minute_limit = request.POST.get("tariff_minute_limit")
-            tariff.gb_limit = request.POST.get("tariff_gb_limit")
-            tariff.minute_overage_cost = request.POST.get("tariff_minute_cost")
-            tariff.gb_overage_cost = request.POST.get("tariff_gb_cost")
+            operator_id = request.POST.get("tariff_operator")
+            tariff.operator = Operator.objects.get(id=operator_id) if operator_id else None
             tariff.save()
         elif "delete_tariff" in request.POST:
             tariff_id = request.POST.get("delete_id")
@@ -666,7 +656,6 @@ def data_view(request):
         "tariffs": tariffs,
         "operators": operators,
     })
-
 
 @login_required_custom
 def numbers_view(request):

@@ -111,17 +111,9 @@ $(document).ready(function () {
     var tariffId = $(this).data('id');
     var tariffName = $(this).data('name');
     var operatorId = $(this).data('operator');
-    var minuteLimit = $(this).data('minute-limit');
-    var gbLimit = $(this).data('gb-limit');
-    var minuteCost = $(this).data('minute-cost');
-    var gbCost = $(this).data('gb-cost');
     $('#modalTariffId').val(tariffId);
     $('#modalTariffName').val(tariffName);
     $('#modalTariffOperator').val(operatorId);
-    $('#modalTariffMinuteLimit').val(minuteLimit);
-    $('#modalTariffGbLimit').val(gbLimit);
-    $('#modalTariffMinuteCost').val(minuteCost);
-    $('#modalTariffGbCost').val(gbCost);
     $('#updateTariffModal').fadeIn();
   });
   $('#modalCloseTariff, #updateTariffModal').click(function (e) {
