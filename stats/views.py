@@ -335,10 +335,10 @@ def history(request):
         active_tab = request.POST.get("active_tab", "phone-numbers-tab")
         return HttpResponseRedirect(reverse("history") + f"?tab={active_tab}")
 
-    # Получаем все записи истории номеров, включая завершённые
+    # Получаем все записи истории номеров, сортировка от поздних к ранним
     histories = PhoneNumberHistory.objects.select_related(
         'phone_number', 'employee', 'employee__company'
-    ).order_by('phone_number__number', 'start_date')
+    ).order_by('phone_number__number', '-start_date')  # Изменено на '-start_date'
     grouped_histories = {}
     for history in histories:
         phone_number = history.phone_number.number
