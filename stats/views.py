@@ -815,11 +815,9 @@ def return_phone_view(request):
             phone = get_object_or_404(PhoneNumber, id=phone_id, status="занят")
             employee_phone = get_object_or_404(EmployeePhoneNumber, phone_number=phone)
 
-            # Обновляем статус номера
             phone.status = "свободен"
             phone.save()
 
-            # Находим последнюю незакрытую запись в истории
             history_entry = PhoneNumberHistory.objects.filter(
                 phone_number=phone, end_date__isnull=True
             ).last()
@@ -831,7 +829,6 @@ def return_phone_view(request):
             else:
                 logger.warning(f"Не найдена незакрытая запись в истории для номера {phone.number}")
 
-            # Удаляем связь с сотрудником
             employee_phone.delete()
             logger.info(f"Номер {phone.number} возвращён в пул, связь с сотрудником удалена")
 
@@ -857,11 +854,9 @@ def transfer_phone_view(request):
             phone = get_object_or_404(PhoneNumber, id=phone_id, status="занят")
             employee_phone = get_object_or_404(EmployeePhoneNumber, phone_number=phone)
 
-            # Обновляем статус номера
             phone.status = "отдан"
             phone.save()
 
-            # Находим последнюю незакрытую запись в истории
             history_entry = PhoneNumberHistory.objects.filter(
                 phone_number=phone, end_date__isnull=True
             ).last()
@@ -873,7 +868,6 @@ def transfer_phone_view(request):
             else:
                 logger.warning(f"Не найдена незакрытая запись в истории для номера {phone.number}")
 
-            # Удаляем связь с сотрудником
             employee_phone.delete()
             logger.info(f"Номер {phone.number} отдан, связь с сотрудником удалена")
 
